@@ -82,3 +82,483 @@
 [2022-02-16 21:28:49,280: INFO/ForkPoolWorker-7] Task create_task[393545d9-fd90-49d9-8f9d-ed0ef4cd7aec] succeeded in 10.01493579999078s: True
 [2022-02-16 21:29:26,493: INFO/MainProcess] Task create_task[d39c559e-0e3e-4de7-91dc-7f2ef898fa68] received
 [2022-02-16 21:29:26,498: INFO/ForkPoolWorker-7] Task create_task[d39c559e-0e3e-4de7-91dc-7f2ef898fa68] succeeded in 0.0014217999996617436s: True
+[2022-05-19 04:08:10,964: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-05-19 04:08:10,967: INFO/MainProcess] mingle: searching for neighbors
+[2022-05-19 04:08:11,977: INFO/MainProcess] mingle: all alone
+[2022-05-19 04:08:11,989: INFO/MainProcess] celery@48d114203d6f ready.
+[2022-05-19 04:08:16,675: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-05-19 04:08:35,441: INFO/MainProcess] Task create_task[fe2550ea-ff51-43d1-b961-419764879116] received
+[2022-05-19 04:08:49,600: INFO/MainProcess] Task create_task[626429dc-9d36-48c7-a834-affc08a51ee2] received
+[2022-05-19 04:08:59,617: INFO/ForkPoolWorker-16] Task create_task[626429dc-9d36-48c7-a834-affc08a51ee2] succeeded in 10.013368403000015s: True
+[2022-05-19 04:09:05,457: INFO/ForkPoolWorker-15] Task create_task[fe2550ea-ff51-43d1-b961-419764879116] succeeded in 30.012892495999978s: True
+[2022-05-19 04:12:10,086: INFO/MainProcess] Task create_task[ea171c47-7843-4850-b914-80faed4b4b19] received
+[2022-05-19 04:12:10,813: INFO/MainProcess] Task create_task[278e3262-2eb1-48e2-82ca-2565d5954cd0] received
+[2022-05-19 04:12:11,480: INFO/MainProcess] Task create_task[3c912d29-6a29-4f58-83ac-b956c53c3c07] received
+[2022-05-19 04:12:12,016: INFO/MainProcess] Task create_task[4b56a3be-951e-4769-aed8-afba6acb9dcb] received
+[2022-05-19 04:12:12,741: INFO/MainProcess] Task create_task[fc6149a3-64ee-4ef5-a9c4-7498969d86dd] received
+[2022-05-19 04:12:20,100: INFO/ForkPoolWorker-15] Task create_task[ea171c47-7843-4850-b914-80faed4b4b19] succeeded in 10.011519007000004s: True
+[2022-05-19 04:12:21,496: INFO/ForkPoolWorker-1] Task create_task[3c912d29-6a29-4f58-83ac-b956c53c3c07] succeeded in 10.01368174199996s: True
+[2022-05-19 04:12:22,034: INFO/ForkPoolWorker-2] Task create_task[4b56a3be-951e-4769-aed8-afba6acb9dcb] succeeded in 10.014714572000003s: True
+[2022-05-19 04:12:30,838: INFO/ForkPoolWorker-16] Task create_task[278e3262-2eb1-48e2-82ca-2565d5954cd0] succeeded in 20.022043629999985s: True
+[2022-05-19 04:12:42,776: INFO/ForkPoolWorker-3] Task create_task[fc6149a3-64ee-4ef5-a9c4-7498969d86dd] succeeded in 30.033519554999998s: True
+[2022-05-19 06:32:03,759: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-05-19 06:32:03,761: INFO/MainProcess] mingle: searching for neighbors
+[2022-05-19 06:32:04,768: INFO/MainProcess] mingle: all alone
+[2022-05-19 06:32:04,793: INFO/MainProcess] celery@48d114203d6f ready.
+[2022-05-19 06:32:09,175: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-05-19 06:32:22,908: INFO/MainProcess] Task create_task[8648f083-38c0-4c82-90fa-449799d3660b] received
+[2022-05-19 06:32:25,220: INFO/MainProcess] Task create_task[977e0e59-ebb0-4c70-85ca-8e98b7158b1a] received
+[2022-05-19 06:32:25,422: INFO/MainProcess] Task create_task[61dc46cd-a639-4aab-8979-6be3e758b56b] received
+[2022-05-19 06:32:25,575: INFO/MainProcess] Task create_task[849642a0-ebaa-4824-b28a-b083cb1c1c73] received
+[2022-05-19 06:32:25,744: INFO/MainProcess] Task create_task[961ffc1d-0f93-4c90-b51c-23cd63f1d63f] received
+[2022-05-19 06:32:25,918: INFO/MainProcess] Task create_task[deed8c5c-ffd6-4535-a2ee-06963eb1d8ff] received
+[2022-05-19 06:32:26,099: INFO/MainProcess] Task create_task[16411a08-de26-4d8b-afbb-8d8fafaf85e8] received
+[2022-05-19 06:32:26,248: INFO/MainProcess] Task create_task[33213066-617c-4c0d-b42a-ecf285a7f7f4] received
+[2022-05-19 06:32:26,401: INFO/MainProcess] Task create_task[cb81da48-af3c-4f62-873c-da72d360bfa2] received
+[2022-05-19 06:32:26,555: INFO/MainProcess] Task create_task[c152e8f7-f0d2-4c0a-b43c-bad0bf4eb67d] received
+[2022-05-19 06:32:26,716: INFO/MainProcess] Task create_task[88a57296-642e-4872-8cfb-39ea144dd0c7] received
+[2022-05-19 06:32:26,879: INFO/MainProcess] Task create_task[b00e6ec4-79e6-4ba8-a6d1-3b5155839a94] received
+[2022-05-19 06:32:27,055: INFO/MainProcess] Task create_task[650c52fe-ef49-4df8-82b8-7b9d77c70cd8] received
+[2022-05-19 06:32:27,214: INFO/MainProcess] Task create_task[e866ceaf-ced1-4834-9841-e3fb2f35ef8c] received
+[2022-05-19 06:32:27,351: INFO/MainProcess] Task create_task[56e26fb1-d3d4-4fbb-b64f-9b977a00d620] received
+[2022-05-19 06:32:35,230: INFO/ForkPoolWorker-16] Task create_task[977e0e59-ebb0-4c70-85ca-8e98b7158b1a] succeeded in 10.007913986000005s: True
+[2022-05-19 06:32:35,429: INFO/ForkPoolWorker-1] Task create_task[61dc46cd-a639-4aab-8979-6be3e758b56b] succeeded in 10.005411174000002s: True
+[2022-05-19 06:32:35,648: INFO/ForkPoolWorker-2] Task create_task[849642a0-ebaa-4824-b28a-b083cb1c1c73] succeeded in 10.069981842000004s: True
+[2022-05-19 06:32:35,750: INFO/ForkPoolWorker-3] Task create_task[961ffc1d-0f93-4c90-b51c-23cd63f1d63f] succeeded in 10.00321490799999s: True
+[2022-05-19 06:32:35,933: INFO/ForkPoolWorker-4] Task create_task[deed8c5c-ffd6-4535-a2ee-06963eb1d8ff] succeeded in 10.012527175999992s: True
+[2022-05-19 06:32:36,114: INFO/ForkPoolWorker-5] Task create_task[16411a08-de26-4d8b-afbb-8d8fafaf85e8] succeeded in 10.012478986000005s: True
+[2022-05-19 06:32:36,259: INFO/ForkPoolWorker-6] Task create_task[33213066-617c-4c0d-b42a-ecf285a7f7f4] succeeded in 10.008972952000008s: True
+[2022-05-19 06:32:36,409: INFO/ForkPoolWorker-7] Task create_task[cb81da48-af3c-4f62-873c-da72d360bfa2] succeeded in 10.006141787000004s: True
+[2022-05-19 06:32:36,569: INFO/ForkPoolWorker-8] Task create_task[c152e8f7-f0d2-4c0a-b43c-bad0bf4eb67d] succeeded in 10.012277709999992s: True
+[2022-05-19 06:32:36,730: INFO/ForkPoolWorker-9] Task create_task[88a57296-642e-4872-8cfb-39ea144dd0c7] succeeded in 10.012461256999998s: True
+[2022-05-19 06:32:36,893: INFO/ForkPoolWorker-10] Task create_task[b00e6ec4-79e6-4ba8-a6d1-3b5155839a94] succeeded in 10.012564136000009s: True
+[2022-05-19 06:32:37,070: INFO/ForkPoolWorker-11] Task create_task[650c52fe-ef49-4df8-82b8-7b9d77c70cd8] succeeded in 10.012111349999984s: True
+[2022-05-19 06:32:37,229: INFO/ForkPoolWorker-12] Task create_task[e866ceaf-ced1-4834-9841-e3fb2f35ef8c] succeeded in 10.013619536999983s: True
+[2022-05-19 06:32:37,365: INFO/ForkPoolWorker-13] Task create_task[56e26fb1-d3d4-4fbb-b64f-9b977a00d620] succeeded in 10.012413498s: True
+[2022-05-19 06:32:42,934: INFO/ForkPoolWorker-15] Task create_task[8648f083-38c0-4c82-90fa-449799d3660b] succeeded in 20.023419528999995s: True
+[2022-05-19 06:39:44,728: INFO/MainProcess] Task create_task[e28261c7-36a7-4cd2-82a9-0d61767152ee] received
+[2022-05-19 06:39:45,311: INFO/MainProcess] Task create_task[bf7b0ada-9f07-4dc2-8a85-6daa1a17ef3e] received
+[2022-05-19 06:39:45,934: INFO/MainProcess] Task create_task[7cc2e51f-6a75-42f2-9f7b-14a9af82cb43] received
+[2022-05-19 06:39:54,740: INFO/ForkPoolWorker-15] Task create_task[e28261c7-36a7-4cd2-82a9-0d61767152ee] succeeded in 10.01070817499999s: True
+[2022-05-19 06:40:05,333: INFO/ForkPoolWorker-16] Task create_task[bf7b0ada-9f07-4dc2-8a85-6daa1a17ef3e] succeeded in 20.020691252000006s: True
+[2022-05-19 06:40:15,966: INFO/ForkPoolWorker-1] Task create_task[7cc2e51f-6a75-42f2-9f7b-14a9af82cb43] succeeded in 30.030785964000074s: True
+[2022-05-19 06:40:40,623: INFO/MainProcess] Task create_task[e4fcfcf7-2b48-47ed-807f-652a23b10fa9] received
+[2022-05-19 06:40:50,636: INFO/ForkPoolWorker-15] Task create_task[e4fcfcf7-2b48-47ed-807f-652a23b10fa9] succeeded in 10.010675392000053s: True
+[2022-05-19 06:41:11,150: INFO/MainProcess] Task create_task[3676b248-389e-47ed-a3dc-dc1f2be63811] received
+[2022-05-19 06:41:21,162: INFO/ForkPoolWorker-15] Task create_task[3676b248-389e-47ed-a3dc-dc1f2be63811] succeeded in 10.010752018999938s: True
+[2022-05-19 06:41:45,001: INFO/MainProcess] Task create_task[3a4c1334-def0-422e-aad1-5ef43f148e9d] received
+[2022-05-19 06:41:55,013: INFO/ForkPoolWorker-15] Task create_task[3a4c1334-def0-422e-aad1-5ef43f148e9d] succeeded in 10.010708396000041s: True
+[2022-05-19 06:41:59,207: ERROR/MainProcess] Received unregistered task of type 'create_task2'.
+The message has been ignored and discarded.
+
+Did you remember to import the module containing this task?
+Or maybe you're using relative imports?
+
+Please see
+http://docs.celeryq.org/en/latest/internals/protocol.html
+for more information.
+
+The full contents of the message body was:
+b'[[1], {}, {"callbacks": null, "errbacks": null, "chain": null, "chord": null}]' (78b)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/celery/worker/consumer/consumer.py", line 581, in on_task_received
+    strategy = strategies[type_]
+KeyError: 'create_task2'
+[2022-05-19 06:44:43,396: ERROR/MainProcess] Received unregistered task of type 'create_task2'.
+The message has been ignored and discarded.
+
+Did you remember to import the module containing this task?
+Or maybe you're using relative imports?
+
+Please see
+http://docs.celeryq.org/en/latest/internals/protocol.html
+for more information.
+
+The full contents of the message body was:
+b'[[1], {}, {"callbacks": null, "errbacks": null, "chain": null, "chord": null}]' (78b)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/celery/worker/consumer/consumer.py", line 581, in on_task_received
+    strategy = strategies[type_]
+KeyError: 'create_task2'
+[2022-05-19 06:45:08,257: ERROR/MainProcess] Received unregistered task of type 'create_task2'.
+The message has been ignored and discarded.
+
+Did you remember to import the module containing this task?
+Or maybe you're using relative imports?
+
+Please see
+http://docs.celeryq.org/en/latest/internals/protocol.html
+for more information.
+
+The full contents of the message body was:
+b'[[1], {}, {"callbacks": null, "errbacks": null, "chain": null, "chord": null}]' (78b)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/celery/worker/consumer/consumer.py", line 581, in on_task_received
+    strategy = strategies[type_]
+KeyError: 'create_task2'
+[2022-05-19 06:45:09,021: ERROR/MainProcess] Received unregistered task of type 'create_task2'.
+The message has been ignored and discarded.
+
+Did you remember to import the module containing this task?
+Or maybe you're using relative imports?
+
+Please see
+http://docs.celeryq.org/en/latest/internals/protocol.html
+for more information.
+
+The full contents of the message body was:
+b'[[1], {}, {"callbacks": null, "errbacks": null, "chain": null, "chord": null}]' (78b)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/celery/worker/consumer/consumer.py", line 581, in on_task_received
+    strategy = strategies[type_]
+KeyError: 'create_task2'
+[2022-05-19 06:45:10,093: INFO/MainProcess] Task create_task[3ec85946-6c11-4d53-bbf0-a8d1359c62d4] received
+[2022-05-19 06:45:30,116: INFO/ForkPoolWorker-15] Task create_task[3ec85946-6c11-4d53-bbf0-a8d1359c62d4] succeeded in 20.020789145000094s: True
+[2022-05-19 06:45:42,930: ERROR/MainProcess] Received unregistered task of type 'create_task2'.
+The message has been ignored and discarded.
+
+Did you remember to import the module containing this task?
+Or maybe you're using relative imports?
+
+Please see
+http://docs.celeryq.org/en/latest/internals/protocol.html
+for more information.
+
+The full contents of the message body was:
+b'[[1], {}, {"callbacks": null, "errbacks": null, "chain": null, "chord": null}]' (78b)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/celery/worker/consumer/consumer.py", line 581, in on_task_received
+    strategy = strategies[type_]
+KeyError: 'create_task2'
+[2022-05-19 06:45:47,698: ERROR/MainProcess] Received unregistered task of type 'create_task2'.
+The message has been ignored and discarded.
+
+Did you remember to import the module containing this task?
+Or maybe you're using relative imports?
+
+Please see
+http://docs.celeryq.org/en/latest/internals/protocol.html
+for more information.
+
+The full contents of the message body was:
+b'[[1], {}, {"callbacks": null, "errbacks": null, "chain": null, "chord": null}]' (78b)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/celery/worker/consumer/consumer.py", line 581, in on_task_received
+    strategy = strategies[type_]
+KeyError: 'create_task2'
+[2022-05-19 06:46:22,600: ERROR/MainProcess] Received unregistered task of type 'create_task2'.
+The message has been ignored and discarded.
+
+Did you remember to import the module containing this task?
+Or maybe you're using relative imports?
+
+Please see
+http://docs.celeryq.org/en/latest/internals/protocol.html
+for more information.
+
+The full contents of the message body was:
+b'[[1], {}, {"callbacks": null, "errbacks": null, "chain": null, "chord": null}]' (78b)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/celery/worker/consumer/consumer.py", line 581, in on_task_received
+    strategy = strategies[type_]
+KeyError: 'create_task2'
+[2022-05-19 06:48:42,210: INFO/MainProcess] Task create_task[ef957794-04ee-4a59-892b-ee9b26a82017] received
+[2022-05-19 06:48:44,053: INFO/MainProcess] Task create_task[e78ef470-c68b-4be7-bafc-7803c588102c] received
+[2022-05-19 06:48:52,223: INFO/ForkPoolWorker-15] Task create_task[ef957794-04ee-4a59-892b-ee9b26a82017] succeeded in 10.010784160000185s: True
+[2022-05-19 06:49:04,075: INFO/ForkPoolWorker-16] Task create_task[e78ef470-c68b-4be7-bafc-7803c588102c] succeeded in 20.02078773700009s: True
+[2022-05-19 06:49:27,188: INFO/MainProcess] Task create_task[42b29881-4c6f-4e6e-b706-0fa82a501a0e] received
+[2022-05-19 06:49:37,200: INFO/ForkPoolWorker-15] Task create_task[42b29881-4c6f-4e6e-b706-0fa82a501a0e] succeeded in 10.010673651999923s: True
+[2022-05-19 10:51:06,797: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-05-19 10:51:06,801: INFO/MainProcess] mingle: searching for neighbors
+[2022-05-19 10:51:07,810: INFO/MainProcess] mingle: all alone
+[2022-05-19 10:51:07,819: INFO/MainProcess] celery@48d114203d6f ready.
+[2022-05-19 10:51:12,141: INFO/MainProcess] Task create_task[11c26b6b-407a-405a-9105-47574988aa18] received
+[2022-05-19 10:51:12,142: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:12,508: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-05-19 10:51:13,144: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:13,582: INFO/MainProcess] Task create_task[a90f2146-4739-46cf-b05a-7cb7256b4b59] received
+[2022-05-19 10:51:13,584: WARNING/ForkPoolWorker-16] poo
+[2022-05-19 10:51:14,146: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:14,587: WARNING/ForkPoolWorker-16] poo
+[2022-05-19 10:51:15,148: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:15,213: INFO/MainProcess] Task create_task[2ffe4365-f755-4806-a849-ddbe5713cb6d] received
+[2022-05-19 10:51:15,216: WARNING/ForkPoolWorker-1] poo
+[2022-05-19 10:51:15,589: WARNING/ForkPoolWorker-16] poo
+[2022-05-19 10:51:16,150: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:16,202: INFO/MainProcess] Task create_task[b33c99d6-29dc-41c5-948a-965904a40040] received
+[2022-05-19 10:51:16,204: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:16,218: WARNING/ForkPoolWorker-1] poo
+[2022-05-19 10:51:16,591: WARNING/ForkPoolWorker-16] poo
+[2022-05-19 10:51:16,851: INFO/MainProcess] Task create_task[9281525c-58e1-463f-9778-b893a9798d35] received
+[2022-05-19 10:51:16,854: WARNING/ForkPoolWorker-3] poo
+[2022-05-19 10:51:17,151: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:17,206: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:17,220: WARNING/ForkPoolWorker-1] poo
+[2022-05-19 10:51:17,593: WARNING/ForkPoolWorker-16] poo
+[2022-05-19 10:51:17,857: WARNING/ForkPoolWorker-3] poo
+[2022-05-19 10:51:18,153: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:18,208: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:18,222: WARNING/ForkPoolWorker-1] poo
+[2022-05-19 10:51:18,594: WARNING/ForkPoolWorker-16] poo
+[2022-05-19 10:51:18,859: WARNING/ForkPoolWorker-3] poo
+[2022-05-19 10:51:19,158: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:19,213: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:19,226: WARNING/ForkPoolWorker-1] poo
+[2022-05-19 10:51:19,599: WARNING/ForkPoolWorker-16] poo
+[2022-05-19 10:51:19,863: WARNING/ForkPoolWorker-3] poo
+[2022-05-19 10:51:20,159: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:20,215: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:20,228: WARNING/ForkPoolWorker-1] poo
+[2022-05-19 10:51:20,601: WARNING/ForkPoolWorker-16] poo
+[2022-05-19 10:51:20,865: WARNING/ForkPoolWorker-3] poo
+[2022-05-19 10:51:21,161: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:21,216: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:21,229: WARNING/ForkPoolWorker-1] poo
+[2022-05-19 10:51:21,603: WARNING/ForkPoolWorker-16] poo
+[2022-05-19 10:51:21,866: WARNING/ForkPoolWorker-3] poo
+[2022-05-19 10:51:22,163: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:22,218: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:22,231: WARNING/ForkPoolWorker-1] poo
+[2022-05-19 10:51:22,604: WARNING/ForkPoolWorker-16] poo
+[2022-05-19 10:51:22,868: WARNING/ForkPoolWorker-3] poo
+[2022-05-19 10:51:23,165: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:23,220: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:23,233: WARNING/ForkPoolWorker-1] poo
+[2022-05-19 10:51:23,609: INFO/ForkPoolWorker-16] Task create_task[a90f2146-4739-46cf-b05a-7cb7256b4b59] succeeded in 10.023021994999993s: True
+[2022-05-19 10:51:23,870: WARNING/ForkPoolWorker-3] poo
+[2022-05-19 10:51:24,167: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:24,222: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:24,234: WARNING/ForkPoolWorker-1] poo
+[2022-05-19 10:51:24,872: WARNING/ForkPoolWorker-3] poo
+[2022-05-19 10:51:25,169: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:25,224: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:25,239: INFO/ForkPoolWorker-1] Task create_task[2ffe4365-f755-4806-a849-ddbe5713cb6d] succeeded in 10.020722045999989s: True
+[2022-05-19 10:51:25,874: WARNING/ForkPoolWorker-3] poo
+[2022-05-19 10:51:26,171: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:26,225: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:26,878: INFO/ForkPoolWorker-3] Task create_task[9281525c-58e1-463f-9778-b893a9798d35] succeeded in 10.022095870000001s: True
+[2022-05-19 10:51:27,173: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:27,227: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:28,175: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:28,229: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:29,177: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:29,231: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:30,179: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:30,233: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:31,180: WARNING/ForkPoolWorker-15] poo
+[2022-05-19 10:51:31,235: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:32,184: INFO/ForkPoolWorker-15] Task create_task[11c26b6b-407a-405a-9105-47574988aa18] succeeded in 20.039724684000007s: True
+[2022-05-19 10:51:32,237: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:33,238: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:34,240: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:35,242: WARNING/ForkPoolWorker-2] poo
+[2022-05-19 10:51:36,248: INFO/ForkPoolWorker-2] Task create_task[b33c99d6-29dc-41c5-948a-965904a40040] succeeded in 20.041366773000007s: True
+[2022-06-13 08:21:44,544: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-06-13 08:21:44,546: INFO/MainProcess] mingle: searching for neighbors
+[2022-06-13 08:21:45,553: INFO/MainProcess] mingle: all alone
+[2022-06-13 08:21:45,572: INFO/MainProcess] celery@48d114203d6f ready.
+[2022-06-13 08:21:46,648: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-06-13 08:22:02,070: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-06-13 08:22:02,072: INFO/MainProcess] mingle: searching for neighbors
+[2022-06-13 08:22:03,078: INFO/MainProcess] mingle: all alone
+[2022-06-13 08:22:03,086: INFO/MainProcess] celery@48d114203d6f ready.
+[2022-06-13 08:22:07,944: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-06-13 08:22:15,205: INFO/MainProcess] Task create_task[4ae75508-d146-4e41-b727-83c0e29e6581] received
+[2022-06-13 08:22:15,206: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:22:16,208: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:22:17,210: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:22:18,212: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:22:19,214: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:22:20,216: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:22:21,218: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:22:22,220: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:22:23,221: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:22:24,223: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:22:25,227: INFO/ForkPoolWorker-15] Task create_task[4ae75508-d146-4e41-b727-83c0e29e6581] succeeded in 10.020952276999992s: True
+[2022-06-13 08:48:02,525: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-06-13 08:48:02,527: INFO/MainProcess] mingle: searching for neighbors
+[2022-06-13 08:48:03,534: INFO/MainProcess] mingle: all alone
+[2022-06-13 08:48:03,541: INFO/MainProcess] celery@48d114203d6f ready.
+[2022-06-13 08:48:08,345: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-06-13 08:56:06,015: INFO/MainProcess] Task create_task[29799855-c222-4a37-a22e-4b54e0de7568] received
+[2022-06-13 08:56:06,017: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:07,019: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:08,021: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:09,023: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:10,025: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:11,027: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:12,029: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:13,031: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:14,032: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:15,034: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:16,036: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:17,038: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:18,040: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:19,042: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:20,044: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:21,046: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:22,048: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:23,050: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:24,052: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:25,054: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:26,059: INFO/ForkPoolWorker-15] Task create_task[29799855-c222-4a37-a22e-4b54e0de7568] succeeded in 20.04135907800037s: True
+[2022-06-13 08:56:35,928: INFO/MainProcess] Task create_task[700e0489-f40c-4afa-ac99-4badd659ec41] received
+[2022-06-13 08:56:35,929: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:36,931: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:37,933: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:38,935: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:39,938: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:40,941: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:41,943: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:42,945: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:43,947: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:44,949: WARNING/ForkPoolWorker-15] poo
+[2022-06-13 08:56:45,951: INFO/ForkPoolWorker-15] Task create_task[700e0489-f40c-4afa-ac99-4badd659ec41] succeeded in 10.02233027300008s: True
+[2022-06-13 08:57:46,510: INFO/MainProcess] Task do_math[e0ea3c0f-8e63-4bf6-b79f-967faad30e72] received
+[2022-06-13 08:57:47,513: INFO/ForkPoolWorker-15] Task do_math[e0ea3c0f-8e63-4bf6-b79f-967faad30e72] succeeded in 1.0018078389998664s: 1
+[2022-06-13 08:57:49,409: INFO/MainProcess] Task do_math[232e6ce1-dd49-4701-bf31-a78ec54b0d05] received
+[2022-06-13 08:57:53,415: INFO/ForkPoolWorker-15] Task do_math[232e6ce1-dd49-4701-bf31-a78ec54b0d05] succeeded in 4.004703045000042s: 4
+[2022-06-13 09:07:41,581: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-06-13 09:07:41,583: INFO/MainProcess] mingle: searching for neighbors
+[2022-06-13 09:07:42,588: INFO/MainProcess] mingle: all alone
+[2022-06-13 09:07:42,596: INFO/MainProcess] celery@971ec600ca3d ready.
+[2022-06-13 09:07:47,509: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-06-13 09:17:05,076: INFO/MainProcess] Task do_math[e29ec50e-9233-4626-bc1f-e30a2fe9b312] received
+[2022-06-13 09:17:06,081: INFO/ForkPoolWorker-15] Task do_math[e29ec50e-9233-4626-bc1f-e30a2fe9b312] succeeded in 1.0032827199997882s: 1
+[2022-06-13 09:17:19,806: INFO/MainProcess] Task do_math[50d35efc-671f-49cb-baa5-4c92e4b60d40] received
+[2022-06-13 09:17:23,812: INFO/ForkPoolWorker-15] Task do_math[50d35efc-671f-49cb-baa5-4c92e4b60d40] succeeded in 4.004906896999728s: 4
+[2022-06-13 09:25:12,021: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-06-13 09:25:12,023: INFO/MainProcess] mingle: searching for neighbors
+[2022-06-13 09:25:13,028: INFO/MainProcess] mingle: all alone
+[2022-06-13 09:25:13,035: INFO/MainProcess] celery@971ec600ca3d ready.
+[2022-06-13 09:25:17,991: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-06-13 09:30:54,960: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-06-13 09:30:54,965: INFO/MainProcess] mingle: searching for neighbors
+[2022-06-13 09:30:55,974: INFO/MainProcess] mingle: all alone
+[2022-06-13 09:30:55,985: INFO/MainProcess] celery@971ec600ca3d ready.
+[2022-06-13 09:32:11,163: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-06-13 09:47:10,670: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-06-13 09:47:10,675: INFO/MainProcess] mingle: searching for neighbors
+[2022-06-13 09:47:11,686: INFO/MainProcess] mingle: all alone
+[2022-06-13 09:47:11,696: INFO/MainProcess] celery@32e7e9acb0f2 ready.
+[2022-06-13 09:47:16,342: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-06-13 09:50:30,991: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-06-13 09:50:30,994: INFO/MainProcess] mingle: searching for neighbors
+[2022-06-13 09:50:32,002: INFO/MainProcess] mingle: all alone
+[2022-06-13 09:50:32,011: INFO/MainProcess] celery@32e7e9acb0f2 ready.
+[2022-06-13 09:50:36,605: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-06-13 10:03:34,246: INFO/MainProcess] Task do_math[37bdbbe5-c2fe-4fb6-9d9e-5d4b10313592] received
+[2022-06-13 10:03:35,254: INFO/ForkPoolWorker-15] Task do_math[37bdbbe5-c2fe-4fb6-9d9e-5d4b10313592] succeeded in 1.004440342999942s: 1
+[2022-06-13 10:04:08,381: INFO/MainProcess] Task do_math[07c4b659-3c71-4870-97db-643bdf3d29d5] received
+[2022-06-13 10:04:09,386: INFO/ForkPoolWorker-15] Task do_math[07c4b659-3c71-4870-97db-643bdf3d29d5] succeeded in 1.0025282869999046s: 1
+[2022-06-13 10:04:10,631: INFO/MainProcess] Task do_math[d07ed164-d523-4712-96b0-faf291cd0170] received
+[2022-06-13 10:04:11,637: INFO/ForkPoolWorker-15] Task do_math[d07ed164-d523-4712-96b0-faf291cd0170] succeeded in 1.0022009839999555s: 1
+[2022-06-13 10:04:14,232: INFO/MainProcess] Task do_math[7c90caac-8d18-4404-8903-ebe75f7a0982] received
+[2022-06-13 10:04:18,244: INFO/ForkPoolWorker-15] Task do_math[7c90caac-8d18-4404-8903-ebe75f7a0982] succeeded in 4.005603841000038s: 4
+[2022-06-13 10:04:39,689: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-06-13 10:04:39,693: INFO/MainProcess] mingle: searching for neighbors
+[2022-06-13 10:04:40,700: INFO/MainProcess] mingle: all alone
+[2022-06-13 10:04:40,709: INFO/MainProcess] celery@32e7e9acb0f2 ready.
+[2022-06-13 10:04:44,128: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-06-13 10:04:44,470: INFO/MainProcess] Task do_math[589ef002-098b-4635-bd8a-a0cd718a1083] received
+[2022-06-13 10:04:45,525: ERROR/ForkPoolWorker-15] Task do_math[589ef002-098b-4635-bd8a-a0cd718a1083] raised unexpected: RuntimeError('No application found. Either work inside a view function or push an application context. See http://flask-sqlalchemy.pocoo.org/contexts/.')
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/sqlalchemy/util/_collections.py", line 1008, in __call__
+    return self.registry[key]
+KeyError: <greenlet.greenlet object at 0x7ffbce311dd0 (otid=0x7ffbcf1caf00) current active started main>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/celery/app/trace.py", line 451, in trace_task
+    R = retval = fun(*args, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/celery/app/trace.py", line 734, in __protected_call__
+    return self.run(*args, **kwargs)
+  File "/usr/src/app/project/server/tasks.py", line 26, in do_math
+    upscore = Matchup.query.filter_by(id=1).first()
+  File "/usr/local/lib/python3.10/site-packages/flask_sqlalchemy/__init__.py", line 552, in __get__
+    return type.query_class(mapper, session=self.sa.session())
+  File "/usr/local/lib/python3.10/site-packages/sqlalchemy/orm/scoping.py", line 47, in __call__
+    sess = self.registry()
+  File "/usr/local/lib/python3.10/site-packages/sqlalchemy/util/_collections.py", line 1010, in __call__
+    return self.registry.setdefault(key, self.createfunc())
+  File "/usr/local/lib/python3.10/site-packages/sqlalchemy/orm/session.py", line 4225, in __call__
+    return self.class_(**local_kw)
+  File "/usr/local/lib/python3.10/site-packages/flask_sqlalchemy/__init__.py", line 174, in __init__
+    self.app = app = db.get_app()
+  File "/usr/local/lib/python3.10/site-packages/flask_sqlalchemy/__init__.py", line 1042, in get_app
+    raise RuntimeError(
+RuntimeError: No application found. Either work inside a view function or push an application context. See http://flask-sqlalchemy.pocoo.org/contexts/.
+[2022-06-13 10:06:32,809: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-06-13 10:06:32,811: INFO/MainProcess] mingle: searching for neighbors
+[2022-06-13 10:06:33,818: INFO/MainProcess] mingle: all alone
+[2022-06-13 10:06:33,830: INFO/MainProcess] celery@32e7e9acb0f2 ready.
+[2022-06-13 10:06:34,125: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-06-13 10:06:37,709: INFO/MainProcess] Task do_math[bcf9a4aa-30e1-4e2a-8629-a78048b24239] received
+[2022-06-13 10:06:38,755: ERROR/ForkPoolWorker-15] Task do_math[bcf9a4aa-30e1-4e2a-8629-a78048b24239] raised unexpected: RuntimeError('No application found. Either work inside a view function or push an application context. See http://flask-sqlalchemy.pocoo.org/contexts/.')
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/sqlalchemy/util/_collections.py", line 1008, in __call__
+    return self.registry[key]
+KeyError: <greenlet.greenlet object at 0x7efe09545dd0 (otid=0x7efe0a4b7140) current active started main>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/celery/app/trace.py", line 451, in trace_task
+    R = retval = fun(*args, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/celery/app/trace.py", line 734, in __protected_call__
+    return self.run(*args, **kwargs)
+  File "/usr/src/app/project/server/tasks.py", line 26, in do_math
+    upscore = Matchup.query.filter_by(id=1).first()
+  File "/usr/local/lib/python3.10/site-packages/flask_sqlalchemy/__init__.py", line 552, in __get__
+    return type.query_class(mapper, session=self.sa.session())
+  File "/usr/local/lib/python3.10/site-packages/sqlalchemy/orm/scoping.py", line 47, in __call__
+    sess = self.registry()
+  File "/usr/local/lib/python3.10/site-packages/sqlalchemy/util/_collections.py", line 1010, in __call__
+    return self.registry.setdefault(key, self.createfunc())
+  File "/usr/local/lib/python3.10/site-packages/sqlalchemy/orm/session.py", line 4225, in __call__
+    return self.class_(**local_kw)
+  File "/usr/local/lib/python3.10/site-packages/flask_sqlalchemy/__init__.py", line 174, in __init__
+    self.app = app = db.get_app()
+  File "/usr/local/lib/python3.10/site-packages/flask_sqlalchemy/__init__.py", line 1042, in get_app
+    raise RuntimeError(
+RuntimeError: No application found. Either work inside a view function or push an application context. See http://flask-sqlalchemy.pocoo.org/contexts/.
+[2022-06-13 10:06:54,815: INFO/MainProcess] Task do_math[75b185db-ac30-45d1-8c93-2e9ad2bbdd61] received
+[2022-06-13 10:06:58,825: ERROR/ForkPoolWorker-15] Task do_math[75b185db-ac30-45d1-8c93-2e9ad2bbdd61] raised unexpected: RuntimeError('No application found. Either work inside a view function or push an application context. See http://flask-sqlalchemy.pocoo.org/contexts/.')
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/sqlalchemy/util/_collections.py", line 1008, in __call__
+    return self.registry[key]
+KeyError: <greenlet.greenlet object at 0x7efe09545dd0 (otid=0x7efe0a4b7140) current active started main>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/celery/app/trace.py", line 451, in trace_task
+    R = retval = fun(*args, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/celery/app/trace.py", line 734, in __protected_call__
+    return self.run(*args, **kwargs)
+  File "/usr/src/app/project/server/tasks.py", line 26, in do_math
+    upscore = Matchup.query.filter_by(id=1).first()
+  File "/usr/local/lib/python3.10/site-packages/flask_sqlalchemy/__init__.py", line 552, in __get__
+    return type.query_class(mapper, session=self.sa.session())
+  File "/usr/local/lib/python3.10/site-packages/sqlalchemy/orm/scoping.py", line 47, in __call__
+    sess = self.registry()
+  File "/usr/local/lib/python3.10/site-packages/sqlalchemy/util/_collections.py", line 1010, in __call__
+    return self.registry.setdefault(key, self.createfunc())
+  File "/usr/local/lib/python3.10/site-packages/sqlalchemy/orm/session.py", line 4225, in __call__
+    return self.class_(**local_kw)
+  File "/usr/local/lib/python3.10/site-packages/flask_sqlalchemy/__init__.py", line 174, in __init__
+    self.app = app = db.get_app()
+  File "/usr/local/lib/python3.10/site-packages/flask_sqlalchemy/__init__.py", line 1042, in get_app
+    raise RuntimeError(
+RuntimeError: No application found. Either work inside a view function or push an application context. See http://flask-sqlalchemy.pocoo.org/contexts/.
+[2022-06-15 01:58:57,378: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-06-15 01:58:57,380: INFO/MainProcess] mingle: searching for neighbors
+[2022-06-15 01:58:58,386: INFO/MainProcess] mingle: all alone
+[2022-06-15 01:58:58,393: INFO/MainProcess] celery@64e8cf0e457c ready.
+[2022-06-15 01:59:02,860: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-06-15 02:10:45,564: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-06-15 02:10:45,566: INFO/MainProcess] mingle: searching for neighbors
+[2022-06-15 02:10:46,573: INFO/MainProcess] mingle: all alone
+[2022-06-15 02:10:46,580: INFO/MainProcess] celery@64e8cf0e457c ready.
+[2022-06-15 02:10:51,069: INFO/MainProcess] Events of group {task} enabled by remote.

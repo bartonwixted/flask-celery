@@ -21,7 +21,7 @@ services:
 
   worker:
     build: .
-    command: celery --app project.server.tasks.celery worker --loglevel=info --logfile=project/logs/celery.log
+    command: celery --app project.server.tasks.celery worker --loglevel=info --logfile=project/logs/celery.log --uid=nobody --gid=nogroup
     volumes:
       - .:/usr/src/app
     environment:

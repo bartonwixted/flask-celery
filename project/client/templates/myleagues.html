@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+
+{{ name }}
+
+{% endblock %}
+
+{% block content %}
+
+
+
+<h1 align="center">My Leagues</h1>
+
+As owner:
+
+<ul class="list-group list-group-flush" id="notes">
+
+    {% for league in user.leaguesOwned %}
+    <li class="list-group-item">
+        <a class="nav-item nav-link" id="login" href="/manage?leagueid={{ league.id }}">{{ league.leagueName }}</a>
+    </li>
+    {% endfor %}
+</ul>
+
+As participant:
+
+<ul class="list-group list-group-flush" id="leagues">
+
+    {% for league in user.leagues %}
+    <li class="list-group-item">
+
+
+        {% for team in league.teams %}
+        {% if team.owner == user.id %}
+        <table style="border-collapse: collapse; width: 100%;" border="1">
+            <tbody>
+                <tr>
+                    <td style="width: 20%;">
+                        <a class="nav-item nav-link" id="login"
+                            href="/manage?leagueid={{ league.id }}">{{ league.leagueName }}</a>
+                        <br />
+                        {{ team.name }}
+                    </td>
+
+                    {% set roles_list = ['top', 'jungle', 'mid', 'bottom', 'support'] %}
+                    {% for this_role in roles_list %}
+                    {% for role in team.roles|selectattr("role", "equalto", this_role) %}
+                    {% for player in role.players|selectattr("default", "equalto", true) %}
+
+                    <td style="width: 15%; text-align: center">
+                        {{player.name}} <img src="/static/img/league/icons/{{role.role}}_icon.webp" width="20"
+                            height="20" />
+                        <br />
+                        <img src="/static/img/league/players/{{tournaments[league.tournament-1].teams[player.team-1].code}}/{{ player.name }}.png"
+                            width="60" height="60" /> <br />
+                    </td>
+                    {% endfor %}
+                    {% endfor %}
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+        {% endif %}
+        {% endfor %}
+    </li>
+    {% endfor %}
+</ul>
+
+<form method="POST">
+    <h3 align="center">New League</h3>
+    <div class="form-group">
+        <label for="title">League name</label>
+        <input type="title" class="form-control" id="leagueName" name="leagueName"
+            placeholder="Your League Name Here" />
+    </div>
+
+    <select id="league" name="league" class="mdb-select md-form" align="center" searchable="Search here..">
+        <option value="0" disabled selected>Choose a League</option>
+        {% for league in leagues %}
+        <option value="{{ league.esportsId }}">{{ league.name }} - {{ league.region }}</option>
+        {% endfor %}
+    </select>
+
+    <br />
+    <button type="submit" class="btn btn-primary">Submit</button>
+
+</form>
+
+{% endblock %}

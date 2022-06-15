@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+
+{{ user.username }}
+
+{% endblock %}
+
+{% block content %}
+
+<h1 align="center">why are you here</h1>
+
+Manual entry for players
+
+<table style="border-collapse: collapse; width: 100%;" border="1">
+    <tbody>
+        <tr>
+            <td style="width: 50%;">Player</td>
+            <td style="width: 50%;">Team</td>
+        </tr>
+        <tr>
+            <td>
+                {% if teams != [] %}
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="text">Player name</label>
+                        <input type="text" class="form-control" id="playername" name="playername"
+                            placeholder="enter name" />
+                    </div>
+
+                    <select id="playerrole" name="playerrole" class="mdb-select md-form" align="center"
+                        searchable="Search here..">
+                        <option value="" disabled selected>Choose a role</option>
+                        <option value="Top">Top</option>
+                        <option value="Jungle">Jungle</option>
+                        <option value="Middle">Middle</option>
+                        <option value="Bottom">Bottom</option>
+                        <option value="Support">Support</option>
+                    </select>
+                    <br />
+
+                    <select id="playerteam" name="playerteam" class="mdb-select md-form" align="center"
+                        searchable="Search here..">
+                        <option value="" disabled selected>Team</option>
+                        {% for team in teams %}
+
+                        <option value="{{ team.id }}"> {{ team.name }} </option>
+
+                        {% endfor %}
+
+                    </select>
+                    <br />
+                    <button type="submit" name="action" value="player" class="btn btn-primary">Create player</button>
+
+                </form>
+                {% endif %}
+            </td>
+            <td>
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="text">Team name</label>
+                        <input type="text" class="form-control" id="teamname" name="teamname"
+                            placeholder="enter name" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="text">esportsId</label>
+                        <input type="text" class="form-control" id="teamid" name="teamid" placeholder="enter team" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="text">code</label>
+                        <input type="text" class="form-control" id="teamcode" name="teamcode"
+                            placeholder="enter team code" />
+                    </div>
+
+                    <br />
+
+                    <select id="tournament" name="tournament" class="mdb-select md-form" align="center"
+                        searchable="Search here..">
+                        <option value="" disabled selected>Tournament</option>
+                        {% for tourney in tournaments %}
+
+                        <option value="{{ tourney.id }}"> {{ tourney.name }} </option>
+
+                        {% endfor %}
+
+                    </select>
+                    <br />
+                    <button type="submit" name="action" value="team" class="btn btn-primary">Create team</button>
+
+                </form>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<form method="POST">
+    <button type="submit" name="action" value="leagues" class="btn btn-primary">Pull Leagues</button>
+</form>
+
+<br />
+<br />
+
+<h1 align="center">Existing Tournaments</h1>
+
+{% for tourney in tournaments %}
+<form method="POST">
+    <div style="text-align: center; padding-top: 10px;">
+        <table style="border-collapse: collapse; width: 100%;" border="1">
+            <tbody>
+                <tr>
+                    <td style="width: 10%;">
+                        <img src="/static/img/league/leagues/{{ leagues[tourney.league - 1].slug }}.png" width="50"
+                            height="50" />
+                    </td>
+                    <td style="width: 10%;">{{ leagues[tourney.league - 1].name }}</td>
+                    <td style="width: 10%;">{{ tourney.name }}</td>
+                    <td style="width: 10%;">
+                        <table style="border-collapse: collapse; width: 100%;" border="1">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 100%;">{{ tourney.startDate }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 100%;">{{ tourney.endDate }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td style="width: 60%;">
+                        <table style="border-collapse: collapse; width: 100%;" border="1">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 16.6667%;">Team</td>
+                                    <td style="width: 16.6667%;">Top</td>
+                                    <td style="width: 16.6667%;">Jng</td>
+                                    <td style="width: 16.6667%;">Mid</td>
+                                    <td style="width: 16.6667%;">Bot</td>
+                                    <td style="width: 16.6667%;">Sup</td>
+                                </tr>
+                                {% for team in tourney.teams %}
+                                <tr>
+                                    <td style="width: 16.6667%;">{{ team.name }}</td>
+                                    <td style="width: 16.6667%;">
+                                        {% for role in team.roles|selectattr("role", "equalto", 'top') %}
+                                        {% for player in role.players %}
+                                        <input type="radio" id="html" name="{{ team.code }} top" value="{{ player.id }}"
+                                            {% if player.default %} checked {% endif %}>
+                                        {{ player.name }}
+                                        <br />
+                                        <img src="/static/img/league/players/{{ team.code }}/{{ player.name }}.png"
+                                            width="50" height="50" /> <br />
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </td>
+                                    <td style="width: 16.6667%;">
+                                        {% for role in team.roles|selectattr("role", "equalto", 'jungle') %}
+                                        {% for player in role.players %}
+                                        <input type="radio" id="html" name="{{ team.code }} jungle"
+                                            value="{{ player.id }}" {% if player.default %} checked {% endif %}>
+                                        {{ player.name }}
+                                        <br />
+                                        <img src="/static/img/league/players/{{ team.code }}/{{ player.name }}.png"
+                                            width="50" height="50" /> <br />
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </td>
+                                    <td style="width: 16.6667%;">
+                                        {% for role in team.roles|selectattr("role", "equalto", 'mid') %}
+                                        {% for player in role.players %}
+                                        <input type="radio" id="html" name="{{ team.code }} mid" value="{{ player.id }}"
+                                            {% if player.default %} checked {% endif %}>
+                                        {{ player.name }}
+                                        <br />
+                                        <img src="/static/img/league/players/{{ team.code }}/{{ player.name }}.png"
+                                            width="50" height="50" /> <br />
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </td>
+                                    <td style="width: 16.6667%;">
+                                        {% for role in team.roles|selectattr("role", "equalto", 'bottom') %}
+                                        {% for player in role.players %}
+                                        <input type="radio" id="html" name="{{ team.code }} bottom"
+                                            value="{{ player.id }}" {% if player.default %} checked {% endif %}>
+                                        {{ player.name }}
+                                        <br />
+                                        <img src="/static/img/league/players/{{ team.code }}/{{ player.name }}.png"
+                                            width="50" height="50" /> <br />
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </td>
+                                    <td style="width: 16.6667%;">
+                                        {% for role in team.roles|selectattr("role", "equalto", 'support') %}
+                                        {% for player in role.players %}
+                                        <input type="radio" id="html" name="{{ team.code }} support"
+                                            value="{{ player.id }}" {% if player.default %} checked {% endif %}>
+                                        {{ player.name }}
+                                        <br />
+                                        <img src="/static/img/league/players/{{ team.code }}/{{ player.name }}.png"
+                                            width="50" height="50" /> <br />
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h1 style="color: #317399;">&nbsp;</h1>
+    </div>
+
+    <button type="submit" name="action" value='defaultPlayers' class="btn btn-primary">Set Default Players</button>
+</form>
+{% endfor %}
+
+<!-- display all tournaments? -->
+
+
+<!-- display all tournaments? -->
+
+
+
+{% endblock %}
