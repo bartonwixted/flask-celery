@@ -202,10 +202,14 @@ Manage your fantasy league {{ fantasy.leagueName }}
     <button type="submit" name="action" class="btn btn-primary" value="Invite">Invite</button>
 </form>
 
+{% endif %}
+
 {% if not fantasy.rounds %}
+{% if user.id == fantasy.owner %}
 <form method="POST">
     <button type="submit" name="action" class="btn btn-primary" value="generate">Generate</button>
 </form>
+{% endif %}
 {% else %}
 <table style="border-collapse: collapse; width: 100%;" border="1">
     <tbody>
@@ -267,7 +271,7 @@ Manage your fantasy league {{ fantasy.leagueName }}
 
 {% endif %}
 
-{% endif %}
+
 <!-- If we have no teams, that means we haven't drafted yet. If we haven't drafted yet, we need to display draft options. 
     If we do have teams, we want to display them all here, starting with [username], [team name?], then displaying players + teams in order of their roles.-->
 <form method="POST">

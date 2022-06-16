@@ -7,7 +7,7 @@ from .models import User, Gamestats, Fantasyleague, Fantasyteam, Tournament, Pla
 from project.server import db
 from flask_login import login_user, login_required, logout_user, current_user
 from datetime import datetime
-from project.server.tasks import create_task
+from project.server.tasks import create_task, background_scrape
 from project.server.main.lolesports_api import Lolesports_API
 from project.server.main.lolscrape import pull_league_teams, pull_league_tournaments, pull_team_players, pull_leagues, pull_league_schedule, pull_game_data
 import os
@@ -96,7 +96,7 @@ def myleagues():
         league = request.form.get("league")
 
         # we should probably just get the most recent season tbh
-        now = str(datetime.today().date())
+        now = '2022-02-02' #str(datetime.today().date())
 
         # check to see what tournaments are available
         allTournaments = api.get_tournaments_for_league(league_id=league)
@@ -167,7 +167,7 @@ def myleagues():
                     players = pull_team_players(team['slug'])
 
                     thisteam = Team.query.filter_by(
-                        esportsId=team['esportsId']).first()
+                        esportsId=team['esportsId'], tournament=exists.id).first()
 
                     roles = ['top', 'jungle', 'mid', 'bottom', 'support']
 
@@ -559,54 +559,63 @@ def matchup():
                 print(game.date)
                 print(game.champion)
                 if not game.champion and game.date < datetime.today():
-                    gamedata = pull_game_data(game.gameId)
-                    for data in gamedata:
-                        dteam = Team.query.filter_by(
-                            esportsId=data['teamId']).first()
-                        print(dteam.name)
-                        drole = Role.query.filter_by(
-                            team=dteam.id, role=data['role']).first()
-                        print(drole.role)
-                        dstats = Gamestats.query.filter_by(
-                            role=drole.id, gameId=game.gameId).first()
-                        print(game)
-                        print(dstats)
-                        print(dstats.date)
-                        champexists = Champion.query.filter_by(
-                            name=data['pick']).first()
-                        print(champexists)
-                        print(data['pick'])
-                        if not champexists:
-                            new_champ = Champion(name=data['pick'])
-
-                            db.session.add(new_champ)
+                    if not game.worker:
+                        task = background_scrape.delay(game.gameId)
+                        thisGame = Gamestats.query.filter_by(gameId = game.gameId).all()
+                        for eachPlayer in thisGame:
+                            eachPlayer.worker = task.id
                             db.session.commit()
+                    else:
+                        task_progress = AsyncResult(game.worker)
+                        if task_progress.status == "SUCCESS":
+                            gamedata = task_progress.result
+                            for data in gamedata:
+                                dteam = Team.query.filter_by(
+                                    esportsId=data['teamId']).first()
+                                print(dteam.name)
+                                drole = Role.query.filter_by(
+                                    team=dteam.id, role=data['role']).first()
+                                print(drole.role)
+                                dstats = Gamestats.query.filter_by(
+                                    role=drole.id, gameId=game.gameId).first()
+                                print(game)
+                                print(dstats)
+                                print(dstats.date)
+                                champexists = Champion.query.filter_by(
+                                    name=data['pick']).first()
+                                print(champexists)
+                                print(data['pick'])
+                                if not champexists:
+                                    new_champ = Champion(name=data['pick'])
 
-                        champion = Champion.query.filter_by(
-                            name=data['pick']).first()
-                        dstats.champion = champion.id
-                        dstats.playerId = data['id']
-                        dstats.teamId = data['teamId']
-                        dstats.kills = data['kills']
-                        dstats.deaths = data['deaths']
-                        dstats.assists = data['assists']
-                        dstats.cs = data['cs']
-                        dstats.wardsKilled = data['wardsKilled']
-                        dstats.wardsPlaced = data['wardsPlaced']
-                        dstats.cs15 = data['cs15']
-                        dstats.firstBlood = data['firstBlood']
-                        dstats.firstBaron = data['firstBaron']
-                        dstats.firstDragon = data['firstDragon']
-                        dstats.firstTower = data['firstTower']
-                        dstats.barons = data['barons']
-                        dstats.towers = data['towers']
-                        dstats.soloKills = data['solo']
-                        dstats.elders = data['elder']
-                        dstats.dragons = ''
-                        for dragon in data['dragons']:
-                            dstats.dragons = dstats.dragons + dragon[0]
-                        db.session.commit()
-                        print(dstats)
+                                    db.session.add(new_champ)
+                                    db.session.commit()
+
+                                champion = Champion.query.filter_by(
+                                    name=data['pick']).first()
+                                dstats.champion = champion.id
+                                dstats.playerId = data['id']
+                                dstats.teamId = data['teamId']
+                                dstats.kills = data['kills']
+                                dstats.deaths = data['deaths']
+                                dstats.assists = data['assists']
+                                dstats.cs = data['cs']
+                                dstats.wardsKilled = data['wardsKilled']
+                                dstats.wardsPlaced = data['wardsPlaced']
+                                dstats.cs15 = data['cs15']
+                                dstats.firstBlood = data['firstBlood']
+                                dstats.firstBaron = data['firstBaron']
+                                dstats.firstDragon = data['firstDragon']
+                                dstats.firstTower = data['firstTower']
+                                dstats.barons = data['barons']
+                                dstats.towers = data['towers']
+                                dstats.soloKills = data['solo']
+                                dstats.elders = data['elder']
+                                dstats.dragons = ''
+                                for dragon in data['dragons']:
+                                    dstats.dragons = dstats.dragons + dragon[0]
+                                db.session.commit()
+                                print(dstats)
     print("team 2")
     for role in team2.roles:
         for game in role.games:
@@ -615,54 +624,54 @@ def matchup():
                 print(game)
                 print(game.champion)
                 if not game.champion and game.date < datetime.today():
-                    gamedata = pull_game_data(game.gameId)
-                    for data in gamedata:
-                        dteam = Team.query.filter_by(
-                            esportsId=data['teamId']).first()
-                        print(dteam.name)
-                        drole = Role.query.filter_by(
-                            team=dteam.id, role=data['role']).first()
-                        print(drole.role)
-                        dstats = Gamestats.query.filter_by(
-                            role=drole.id, gameId=game.gameId).first()
-                        print(game)
-                        print(dstats)
-                        print(dstats.date)
-                        champexists = Champion.query.filter_by(
-                            name=data['pick']).first()
-                        print(champexists)
-                        print(data['pick'])
-                        if not champexists:
-                            new_champ = Champion(name=data['pick'])
-
-                            db.session.add(new_champ)
+                    if not game.worker:
+                        task = background_scrape.delay(game.gameId)
+                        thisGame = Gamestats.query.filter_by(gameId = game.gameId).all()
+                        for eachPlayer in thisGame:
+                            eachPlayer.worker = task.id
                             db.session.commit()
+                    else:
+                        task_progress = AsyncResult(game.worker)
+                        if task_progress.status == "SUCCESS":
+                            gamedata = task_progress.result
+                            for data in gamedata:
+                                dteam = Team.query.filter_by(
+                                    esportsId=data['teamId']).first()
+                                print(dteam.name)
+                                drole = Role.query.filter_by(
+                                    team=dteam.id, role=data['role']).first()
+                                print(drole.role)
+                                dstats = Gamestats.query.filter_by(
+                                    role=drole.id, gameId=game.gameId).first()
+                                print(game)
+                                print(dstats)
+                                print(dstats.date)
 
-                        champion = Champion.query.filter_by(
-                            name=data['pick']).first()
-                        dstats.champion = champion.id
-                        dstats.playerId = data['id']
-                        dstats.teamId = data['teamId']
-                        dstats.kills = data['kills']
-                        dstats.deaths = data['deaths']
-                        dstats.assists = data['assists']
-                        dstats.cs = data['cs']
-                        dstats.wardsKilled = data['wardsKilled']
-                        dstats.wardsPlaced = data['wardsPlaced']
-                        dstats.cs15 = data['cs15']
-                        dstats.firstBlood = data['firstBlood']
-                        dstats.firstBaron = data['firstBaron']
-                        dstats.firstDragon = data['firstDragon']
-                        dstats.firstTower = data['firstTower']
-                        dstats.barons = data['barons']
-                        dstats.towers = data['towers']
-                        dstats.soloKills = data['solo']
-                        dstats.elders = data['elder']
-                        dstats.dragons = ''
-                        for dragon in data['dragons']:
-                            dstats.dragons = dstats.dragons + dragon[0]
-                        db.session.commit()
-                        print(dstats)
+                                champion = Champion.query.filter_by(
+                                    name=data['pick']).first()
+                                dstats.champion = champion.id
+                                dstats.playerId = data['id']
+                                dstats.teamId = data['teamId']
+                                dstats.kills = data['kills']
+                                dstats.deaths = data['deaths']
+                                dstats.assists = data['assists']
+                                dstats.cs = data['cs']
+                                dstats.wardsKilled = data['wardsKilled']
+                                dstats.wardsPlaced = data['wardsPlaced']
+                                dstats.cs15 = data['cs15']
+                                dstats.firstBlood = data['firstBlood']
+                                dstats.firstBaron = data['firstBaron']
+                                dstats.firstDragon = data['firstDragon']
+                                dstats.firstTower = data['firstTower']
+                                dstats.barons = data['barons']
+                                dstats.towers = data['towers']
+                                dstats.soloKills = data['solo']
+                                dstats.elders = data['elder']
+                                dstats.dragons = ''
+                                for dragon in data['dragons']:
+                                    dstats.dragons = dstats.dragons + dragon[0]
+                                db.session.commit()
+                                print(dstats)
 
     # For each player in the matchup
     # If there is a champion entry, do nothing (entry already full)

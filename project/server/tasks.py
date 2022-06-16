@@ -21,4 +21,5 @@ def create_task(task_type):
 
 @celery.task(name="background_scrape")
 def background_scrape(gameID):
-    return lolscrape.pull_game_data(gameID)
+    gamedata = lolscrape.pull_game_data(gameID)
+    return gamedata
