@@ -232,37 +232,6 @@ def get_status(task_id):
     return jsonify(result), 200
 
 
-@main_blueprint.route("/matchup2", methods=['GET'])
-@login_required
-def matchup2():
-    leagueid = request.args.get('leagueid')
-    matchupid = request.args.get('m')
-
-    fantasy = Fantasyleague.query.filter_by(id=leagueid).first()
-    matchup = Matchup.query.filter_by(id=matchupid).first()
-    round = Round.query.filter_by(id=matchup.round).first()
-    fteam1 = Fantasyteam.query.filter_by(id=matchup.team1).first()
-    fteam2 = Fantasyteam.query.filter_by(id=matchup.team2).first()
-    tournament = Tournament.query.filter_by(id=fantasy.tournament).first()
-    champions = Champion.query.all()
-    
-    for role in fteam1:
-        for game in role.games:
-            if game.round == round.number:
-                print("lol")
-                
-        
-    # For each player in the matchup
-    # If there is a champion entry, do nothing (entry already full)
-    # If there is no champion entry, but there is a workerID, check the worker status
-        # if worker is finished, pull and store all the data.
-    # If there is no champ entry and no worker, create a worker.
-
-    return render_template(
-        "matchup.html",
-        user=current_user,
-        name=current_user.username, team1=fteam1, team2=fteam2, matchup=matchup, fantasy=fantasy, round=round, tournament=tournament, bestof=1, champions=champions)
-
 @main_blueprint.route("/matchup", methods=['GET', 'POST'])
 @login_required
 def matchup():
@@ -553,125 +522,481 @@ def matchup():
     times = []
 
     for role in team1.roles:
-        for game in role.games:
-            if game.round == round.number:
-                times.append(game.date)
-                print(game.date)
-                print(game.champion)
-                if not game.champion and game.date < datetime.today():
-                    if not game.worker:
+        games = Gamestats.query.filter_by(role=role.id, round=round.number)
+        for game in games:
+            times.append(game.date)
+            print(game.date)
+            print(game.champion)
+            if not game.champion and game.date < datetime.today():
+                if not game.worker:
+                    task = background_scrape.delay(game.gameId)
+                    thisGame = Gamestats.query.filter_by(gameId = game.gameId).all()
+                    for eachPlayer in thisGame:
+                        eachPlayer.worker = task.id
+                        db.session.commit()
+                else:
+                    task_progress = AsyncResult(game.worker)
+                    if task_progress.status == "SUCCESS":
+                        gamedata = task_progress.result
+                        for data in gamedata:
+                            dteam = Team.query.filter_by(
+                                esportsId=data['teamId']).first()
+                            print(dteam.name)
+                            drole = Role.query.filter_by(
+                                team=dteam.id, role=data['role']).first()
+                            print(drole.role)
+                            dstats = Gamestats.query.filter_by(
+                                role=drole.id, gameId=game.gameId).first()
+                            print(game)
+                            print(dstats)
+                            print(dstats.date)
+                            champexists = Champion.query.filter_by(
+                                name=data['pick']).first()
+                            print(champexists)
+                            print(data['pick'])
+                            if not champexists:
+                                new_champ = Champion(name=data['pick'])
+
+                                db.session.add(new_champ)
+                                db.session.commit()
+
+                            champion = Champion.query.filter_by(
+                                name=data['pick']).first()
+                            dstats.champion = champion.id
+                            dstats.playerId = data['id']
+                            dstats.teamId = data['teamId']
+                            dstats.kills = data['kills']
+                            dstats.deaths = data['deaths']
+                            dstats.assists = data['assists']
+                            dstats.cs = data['cs']
+                            dstats.wardsKilled = data['wardsKilled']
+                            dstats.wardsPlaced = data['wardsPlaced']
+                            dstats.cs15 = data['cs15']
+                            dstats.firstBlood = data['firstBlood']
+                            dstats.firstBaron = data['firstBaron']
+                            dstats.firstDragon = data['firstDragon']
+                            dstats.firstTower = data['firstTower']
+                            dstats.barons = data['barons']
+                            dstats.towers = data['towers']
+                            dstats.soloKills = data['solo']
+                            dstats.elders = data['elder']
+                            dstats.dragons = ''
+                            for dragon in data['dragons']:
+                                dstats.dragons = dstats.dragons + dragon[0]
+                            db.session.commit()
+                            print(dstats)
+                    elif task_progress.status == "FAILURE":
                         task = background_scrape.delay(game.gameId)
                         thisGame = Gamestats.query.filter_by(gameId = game.gameId).all()
                         for eachPlayer in thisGame:
                             eachPlayer.worker = task.id
                             db.session.commit()
+        bp = 0
+        tp = 0
+        for game in games:
+            gp = 0
+            if game.champion:
+                gp = gp + game.kills * fantasy.kill
+                gp = gp + game.deaths * fantasy.death
+                gp = gp + game.assists * fantasy.assist
+                gp = gp + game.cs * fantasy.cs
+                gp = gp + game.wardsKilled * fantasy.wardKill
+                gp = gp + game.wardsPlaced * fantasy.wardPlace
+                #gp = gp + game.cs15 * fantasy.morecs15
+                gp = gp + game.firstBlood * fantasy.firstBlood
+                gp = gp + game.firstBaron * fantasy.firstBaron
+                gp = gp + game.firstDragon * fantasy.firstDragon
+                gp = gp + game.firstTower * fantasy.firstTower
+                gp = gp + game.barons * fantasy.baron
+                gp = gp + game.towers * fantasy.tower
+                gp = gp + game.soloKills + fantasy.soloKill
+                gp = gp + game.elders * fantasy.elder
+                gp = gp + len(game.dragons) * fantasy.dragon
+                bp = bp + gp
+                if role.role == 'top':
+                    if matchup.pick1top:
+                        if matchup.pick1top[0].id == game.champion:
+                            if matchup.ban1top == matchup.pick1top:
+                                #do nothing
+                                tp = tp + gp
+                            else:
+                                tp = tp + fantasy.pickmul*gp
+                        else:
+                            if matchup.ban1top:
+                                if matchup.ban1top[0].id == game.champion:
+                                    tp = tp + fantasy.banmul*gp
+                                else:
+                                    tp = tp + gp
+                            else:
+                                tp = tp + gp
                     else:
-                        task_progress = AsyncResult(game.worker)
-                        if task_progress.status == "SUCCESS":
-                            gamedata = task_progress.result
-                            for data in gamedata:
-                                dteam = Team.query.filter_by(
-                                    esportsId=data['teamId']).first()
-                                print(dteam.name)
-                                drole = Role.query.filter_by(
-                                    team=dteam.id, role=data['role']).first()
-                                print(drole.role)
-                                dstats = Gamestats.query.filter_by(
-                                    role=drole.id, gameId=game.gameId).first()
-                                print(game)
-                                print(dstats)
-                                print(dstats.date)
-                                champexists = Champion.query.filter_by(
-                                    name=data['pick']).first()
-                                print(champexists)
-                                print(data['pick'])
-                                if not champexists:
-                                    new_champ = Champion(name=data['pick'])
+                        if matchup.ban1top:
+                            if matchup.ban1top[0].id == game.champion:
+                                tp = tp + fantasy.banmul*gp
+                            else:
+                                tp = tp + gp
+                        else:
+                            tp = tp + gp
 
-                                    db.session.add(new_champ)
-                                    db.session.commit()
+                elif role.role == 'jungle':
+                    if matchup.pick1jungle:
+                        print(matchup.pick1jungle[0].id, game.champion)
+                        if matchup.pick1jungle[0].id == game.champion:
+                            if matchup.ban1jungle == matchup.pick1jungle:
+                                #do nothing
+                                tp = tp + gp
+                            else:
+                                tp = tp + fantasy.pickmul*gp
+                        else:
+                            if matchup.ban1jungle:
+                                if matchup.ban1jungle[0].id == game.champion:
+                                    tp = tp + fantasy.banmul*gp
+                                else:
+                                    tp = tp + gp
+                            else:
+                                tp = tp + gp
+                    else:
+                        if matchup.ban1jungle:
+                            if matchup.ban1jungle[0].id == game.champion:
+                                tp = tp + fantasy.banmul*gp
+                            else:
+                                tp = tp + gp
+                        else:
+                            tp = tp + gp
 
-                                champion = Champion.query.filter_by(
-                                    name=data['pick']).first()
-                                dstats.champion = champion.id
-                                dstats.playerId = data['id']
-                                dstats.teamId = data['teamId']
-                                dstats.kills = data['kills']
-                                dstats.deaths = data['deaths']
-                                dstats.assists = data['assists']
-                                dstats.cs = data['cs']
-                                dstats.wardsKilled = data['wardsKilled']
-                                dstats.wardsPlaced = data['wardsPlaced']
-                                dstats.cs15 = data['cs15']
-                                dstats.firstBlood = data['firstBlood']
-                                dstats.firstBaron = data['firstBaron']
-                                dstats.firstDragon = data['firstDragon']
-                                dstats.firstTower = data['firstTower']
-                                dstats.barons = data['barons']
-                                dstats.towers = data['towers']
-                                dstats.soloKills = data['solo']
-                                dstats.elders = data['elder']
-                                dstats.dragons = ''
-                                for dragon in data['dragons']:
-                                    dstats.dragons = dstats.dragons + dragon[0]
-                                db.session.commit()
-                                print(dstats)
+                elif role.role == 'mid':
+                    if matchup.pick1mid:
+                        if matchup.pick1mid[0].id == game.champion:
+                            if matchup.ban1mid == matchup.pick1mid:
+                                #do nothing
+                                tp = tp + gp
+                            else:
+                                tp = tp + fantasy.pickmul*gp
+                        else:
+                            if matchup.ban1mid:
+                                if matchup.ban1mid[0].id == game.champion:
+                                    tp = tp + fantasy.banmul*gp
+                                else:
+                                    tp = tp + gp
+                            else:
+                                tp = tp + gp
+                    else:
+                        if matchup.ban1mid:
+                            if matchup.ban1mid[0].id == game.champion:
+                                tp = tp + fantasy.banmul*gp
+                            else:
+                                tp = tp + gp
+                        else:
+                            tp = tp + gp
+
+                elif role.role == 'bottom':
+                    if matchup.pick1bottom:
+                        if matchup.pick1bottom[0].id == game.champion:
+                            if matchup.ban1bottom == matchup.pick1bottom:
+                                #do nothing
+                                tp = tp + gp
+                            else:
+                                tp = tp + fantasy.pickmul*gp
+                        else:
+                            if matchup.ban1bottom:
+                                if matchup.ban1bottom[0].id == game.champion:
+                                    tp = tp + fantasy.banmul*gp
+                                else:
+                                    tp = tp + gp
+                            else:
+                                tp = tp + gp
+                    else:
+                        if matchup.ban1bottom:
+                            if matchup.ban1bottom[0].id == game.champion:
+                                tp = tp + fantasy.banmul*gp
+                            else:
+                                tp = tp + gp
+                        else:
+                            tp = tp + gp
+
+                elif role.role == 'support':
+                    if matchup.pick1support:
+                        if matchup.pick1support[0].id == game.champion:
+                            if matchup.ban1support == matchup.pick1support:
+                                #do nothing
+                                tp = tp + gp
+                            else:
+                                tp = tp + fantasy.pickmul*gp
+                        else:
+                            if matchup.ban1support:
+                                if matchup.ban1support[0].id == game.champion:
+                                    tp = tp + fantasy.banmul*gp
+                                else:
+                                    tp = tp + gp
+                            else:
+                                tp = tp + gp
+                    else:
+                        if matchup.ban1support:
+                            if matchup.ban1support[0].id == game.champion:
+                                tp = tp + fantasy.banmul*gp
+                            else:
+                                tp = tp + gp
+                        else:
+                            tp = tp + gp
+
+
+        if role.role == 'top':
+            matchup.base1top = bp
+            matchup.total1top = tp
+        elif role.role == 'jungle':
+            matchup.base1jungle = bp
+            matchup.total1jungle = tp
+        elif role.role == 'mid':
+            matchup.base1mid = bp
+            matchup.total1mid = tp
+        elif role.role == 'bottom':
+            matchup.base1bottom = bp
+            matchup.total1bottom = tp
+        elif role.role == 'support':
+            matchup.base1support = bp
+            matchup.total1support = tp
+        
+        db.session.commit()
+    matchup.base1 = matchup.base1top + matchup.base1jungle + matchup.base1mid + matchup.base1bottom + matchup.base1support
+    matchup.total1 = matchup.total1top + matchup.total1jungle + matchup.total1mid + matchup.total1bottom + matchup.total1support
+    db.session.commit()
+        
+
+        
+
     print("team 2")
     for role in team2.roles:
-        for game in role.games:
-            if game.round == round.number:
-                times.append(game.date)
-                print(game)
-                print(game.champion)
-                if not game.champion and game.date < datetime.today():
-                    if not game.worker:
+        games = Gamestats.query.filter_by(role=role.id, round=round.number)
+        for game in games:
+            times.append(game.date)
+            print(game)
+            print(game.champion)
+            if not game.champion and game.date < datetime.today():
+                if not game.worker:
+                    task = background_scrape.delay(game.gameId)
+                    thisGame = Gamestats.query.filter_by(gameId = game.gameId).all()
+                    for eachPlayer in thisGame:
+                        eachPlayer.worker = task.id
+                        db.session.commit()
+                else:
+                    task_progress = AsyncResult(game.worker)
+                    if task_progress.status == "SUCCESS":
+                        gamedata = task_progress.result
+                        for data in gamedata:
+                            dteam = Team.query.filter_by(
+                                esportsId=data['teamId']).first()
+                            print(dteam.name)
+                            drole = Role.query.filter_by(
+                                team=dteam.id, role=data['role']).first()
+                            print(drole.role)
+                            dstats = Gamestats.query.filter_by(
+                                role=drole.id, gameId=game.gameId).first()
+                            print(game)
+                            print(dstats)
+                            print(dstats.date)
+
+                            champion = Champion.query.filter_by(
+                                name=data['pick']).first()
+                            dstats.champion = champion.id
+                            dstats.playerId = data['id']
+                            dstats.teamId = data['teamId']
+                            dstats.kills = data['kills']
+                            dstats.deaths = data['deaths']
+                            dstats.assists = data['assists']
+                            dstats.cs = data['cs']
+                            dstats.wardsKilled = data['wardsKilled']
+                            dstats.wardsPlaced = data['wardsPlaced']
+                            dstats.cs15 = data['cs15']
+                            dstats.firstBlood = data['firstBlood']
+                            dstats.firstBaron = data['firstBaron']
+                            dstats.firstDragon = data['firstDragon']
+                            dstats.firstTower = data['firstTower']
+                            dstats.barons = data['barons']
+                            dstats.towers = data['towers']
+                            dstats.soloKills = data['solo']
+                            dstats.elders = data['elder']
+                            dstats.dragons = ''
+                            for dragon in data['dragons']:
+                                dstats.dragons = dstats.dragons + dragon[0]
+                            db.session.commit()
+                            print(dstats)
+                    elif task_progress.status == "FAILURE":
                         task = background_scrape.delay(game.gameId)
                         thisGame = Gamestats.query.filter_by(gameId = game.gameId).all()
                         for eachPlayer in thisGame:
                             eachPlayer.worker = task.id
                             db.session.commit()
-                    else:
-                        task_progress = AsyncResult(game.worker)
-                        if task_progress.status == "SUCCESS":
-                            gamedata = task_progress.result
-                            for data in gamedata:
-                                dteam = Team.query.filter_by(
-                                    esportsId=data['teamId']).first()
-                                print(dteam.name)
-                                drole = Role.query.filter_by(
-                                    team=dteam.id, role=data['role']).first()
-                                print(drole.role)
-                                dstats = Gamestats.query.filter_by(
-                                    role=drole.id, gameId=game.gameId).first()
-                                print(game)
-                                print(dstats)
-                                print(dstats.date)
 
-                                champion = Champion.query.filter_by(
-                                    name=data['pick']).first()
-                                dstats.champion = champion.id
-                                dstats.playerId = data['id']
-                                dstats.teamId = data['teamId']
-                                dstats.kills = data['kills']
-                                dstats.deaths = data['deaths']
-                                dstats.assists = data['assists']
-                                dstats.cs = data['cs']
-                                dstats.wardsKilled = data['wardsKilled']
-                                dstats.wardsPlaced = data['wardsPlaced']
-                                dstats.cs15 = data['cs15']
-                                dstats.firstBlood = data['firstBlood']
-                                dstats.firstBaron = data['firstBaron']
-                                dstats.firstDragon = data['firstDragon']
-                                dstats.firstTower = data['firstTower']
-                                dstats.barons = data['barons']
-                                dstats.towers = data['towers']
-                                dstats.soloKills = data['solo']
-                                dstats.elders = data['elder']
-                                dstats.dragons = ''
-                                for dragon in data['dragons']:
-                                    dstats.dragons = dstats.dragons + dragon[0]
-                                db.session.commit()
-                                print(dstats)
+        bp = 0
+        tp = 0
+        for game in games:
+            gp = 0
+            if game.champion:
+                gp = gp + game.kills * fantasy.kill
+                gp = gp + game.deaths * fantasy.death
+                gp = gp + game.assists * fantasy.assist
+                gp = gp + game.cs * fantasy.cs
+                gp = gp + game.wardsKilled * fantasy.wardKill
+                gp = gp + game.wardsPlaced * fantasy.wardPlace
+                #gp = gp + game.cs15 * fantasy.morecs15
+                gp = gp + game.firstBlood * fantasy.firstBlood
+                gp = gp + game.firstBaron * fantasy.firstBaron
+                gp = gp + game.firstDragon * fantasy.firstDragon
+                gp = gp + game.firstTower * fantasy.firstTower
+                gp = gp + game.barons * fantasy.baron
+                gp = gp + game.towers * fantasy.tower
+                gp = gp + game.soloKills + fantasy.soloKill
+                gp = gp + game.elders * fantasy.elder
+                gp = gp + len(game.dragons) * fantasy.dragon
+                bp = bp + gp
+                if role.role == 'top':
+                    if matchup.pick2top:
+                        if matchup.pick2top[0].id == game.champion:
+                            if matchup.ban2top == matchup.pick2top:
+                                #do nothing
+                                tp = tp + gp
+                            else:
+                                tp = tp + fantasy.pickmul*gp
+                        else:
+                            if matchup.ban2top:
+                                if matchup.ban2top[0].id == game.champion:
+                                    tp = tp + fantasy.banmul*gp
+                                else:
+                                    tp = tp + gp
+                            else:
+                                tp = tp + gp
+                    else:
+                        if matchup.ban2top:
+                            if matchup.ban2top[0].id == game.champion:
+                                tp = tp + fantasy.banmul*gp
+                            else:
+                                tp = tp + gp
+                        else:
+                            tp = tp + gp
+
+                elif role.role == 'jungle':
+                    if matchup.pick2jungle:
+                        print(matchup.pick2jungle[0].id, game.champion)
+                        if matchup.pick2jungle[0].id == game.champion:
+                            if matchup.ban2jungle == matchup.pick2jungle:
+                                #do nothing
+                                tp = tp + gp
+                            else:
+                                tp = tp + fantasy.pickmul*gp
+                        else:
+                            if matchup.ban2jungle:
+                                if matchup.ban2jungle[0].id == game.champion:
+                                    tp = tp + fantasy.banmul*gp
+                                else:
+                                    tp = tp + gp
+                            else:
+                                tp = tp + gp
+                    else:
+                        if matchup.ban2jungle:
+                            if matchup.ban2jungle[0].id == game.champion:
+                                tp = tp + fantasy.banmul*gp
+                            else:
+                                tp = tp + gp
+                        else:
+                            tp = tp + gp
+
+                elif role.role == 'mid':
+                    if matchup.pick2mid:
+                        if matchup.pick2mid[0].id == game.champion:
+                            if matchup.ban2mid == matchup.pick2mid:
+                                #do nothing
+                                tp = tp + gp
+                            else:
+                                tp = tp + fantasy.pickmul*gp
+                        else:
+                            if matchup.ban2mid:
+                                if matchup.ban2mid[0].id == game.champion:
+                                    tp = tp + fantasy.banmul*gp
+                                else:
+                                    tp = tp + gp
+                            else:
+                                tp = tp + gp
+                    else:
+                        if matchup.ban2mid:
+                            if matchup.ban2mid[0].id == game.champion:
+                                tp = tp + fantasy.banmul*gp
+                            else:
+                                tp = tp + gp
+                        else:
+                            tp = tp + gp
+
+                elif role.role == 'bottom':
+                    if matchup.pick2bottom:
+                        if matchup.pick2bottom[0].id == game.champion:
+                            if matchup.ban2bottom == matchup.pick2bottom:
+                                #do nothing
+                                tp = tp + gp
+                            else:
+                                tp = tp + fantasy.pickmul*gp
+                        else:
+                            if matchup.ban2bottom:
+                                if matchup.ban2bottom[0].id == game.champion:
+                                    tp = tp + fantasy.banmul*gp
+                                else:
+                                    tp = tp + gp
+                            else:
+                                tp = tp + gp
+                    else:
+                        if matchup.ban2bottom:
+                            if matchup.ban2bottom[0].id == game.champion:
+                                tp = tp + fantasy.banmul*gp
+                            else:
+                                tp = tp + gp
+                        else:
+                            tp = tp + gp
+
+                elif role.role == 'support':
+                    if matchup.pick2support:
+                        if matchup.pick2support[0].id == game.champion:
+                            if matchup.ban2support == matchup.pick2support:
+                                #do nothing
+                                tp = tp + gp
+                            else:
+                                tp = tp + fantasy.pickmul*gp
+                        else:
+                            if matchup.ban2support:
+                                if matchup.ban2support[0].id == game.champion:
+                                    tp = tp + fantasy.banmul*gp
+                                else:
+                                    tp = tp + gp
+                            else:
+                                tp = tp + gp
+                    else:
+                        if matchup.ban2support:
+                            if matchup.ban2support[0].id == game.champion:
+                                tp = tp + fantasy.banmul*gp
+                            else:
+                                tp = tp + gp
+                        else:
+                            tp = tp + gp
+
+
+        if role.role == 'top':
+            matchup.base2top = bp
+            matchup.total2top = tp
+        elif role.role == 'jungle':
+            matchup.base2jungle = bp
+            matchup.total2jungle = tp
+        elif role.role == 'mid':
+            matchup.base2mid = bp
+            matchup.total2mid = tp
+        elif role.role == 'bottom':
+            matchup.base2bottom = bp
+            matchup.total2bottom = tp
+        elif role.role == 'support':
+            matchup.base2support = bp
+            matchup.total2support = tp
+        
+        db.session.commit()
+    matchup.base2 = matchup.base2top + matchup.base2jungle + matchup.base2mid + matchup.base2bottom + matchup.base2support
+    matchup.total2 = matchup.total2top + matchup.total2jungle + matchup.total2mid + matchup.total2bottom + matchup.total2support
+    db.session.commit()
+                                
 
     # For each player in the matchup
     # If there is a champion entry, do nothing (entry already full)
@@ -679,7 +1004,7 @@ def matchup():
         # if worker is finished, pull and store all the data.
     # If there is no champ entry and no worker, create a worker.
 
-    if min(times) < now:
+    if min(times) > now:
         picks_locked = True
     else:
         picks_locked = False
@@ -822,7 +1147,7 @@ def manage():
             fantasy.soul = request.form.get("soul_points")
             fantasy.elder = request.form.get("elder_points")
             fantasy.win = request.form.get("win_points")
-
+            db.session.commit()
     return render_template(
         "manage.html",
         user=current_user,

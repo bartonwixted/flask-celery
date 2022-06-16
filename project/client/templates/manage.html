@@ -44,7 +44,7 @@ Manage your fantasy league {{ fantasy.leagueName }}
                                 <td style="width: 50%;">Kills</td>
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="kill_points" name="kill_points"
-                                        placeholder="{{ fantasy.kill }}" value="{{ fantasy.kill }}" />
+                                        placeholder="{{ fantasy.kill }}" value="{{ fantasy.kill }}" step="any" />
                                 </td>
                             </tr>
 
@@ -52,14 +52,14 @@ Manage your fantasy league {{ fantasy.leagueName }}
                                 <td style="width: 50%;">Deaths</td>
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="death_points" name="death_points"
-                                        placeholder="{{ fantasy.death }}" value="{{ fantasy.death }}" />
+                                        placeholder="{{ fantasy.death }}" value="{{ fantasy.death }}" step="any" />
                                 </td>
                             </tr>
                             <tr>
                                 <td style="width: 50%;">Assists</td>
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="assist_points" name="assist_points"
-                                        placeholder="{{ fantasy.assist }}" value="{{ fantasy.assist }}" />
+                                        placeholder="{{ fantasy.assist }}" value="{{ fantasy.assist }}" step="any" />
                                 </td>
                             </tr>
                             <tr>
@@ -67,7 +67,7 @@ Manage your fantasy league {{ fantasy.leagueName }}
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="wardPlace_points"
                                         name="wardPlace_points" placeholder="{{ fantasy.wardPlace }}"
-                                        value="{{ fantasy.wardPlace }}" />
+                                        value="{{ fantasy.wardPlace }}" step="any" />
                                 </td>
                             </tr>
                             <tr>
@@ -75,14 +75,14 @@ Manage your fantasy league {{ fantasy.leagueName }}
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="wardKill_points"
                                         name="wardKill_points" placeholder="{{ fantasy.wardKill }}"
-                                        value="{{ fantasy.wardKill }}" />
+                                        value="{{ fantasy.wardKill }}" step="any" />
                                 </td>
                             </tr>
                             <tr>
                                 <td style="width: 50%;">CS</td>
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="cs_points" name="cs_points"
-                                        placeholder="{{ fantasy.cs }}" value="{{ fantasy.cs }}" />
+                                        placeholder="{{ fantasy.cs }}" value="{{ fantasy.cs }}" step="any" />
                                 </td>
                             </tr>
                         </tbody>
@@ -96,7 +96,7 @@ Manage your fantasy league {{ fantasy.leagueName }}
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="firstBaron_points"
                                         name="firstBaron_points" placeholder="{{ fantasy.firstBaron }}"
-                                        value="{{ fantasy.firstBaron }}" />
+                                        value="{{ fantasy.firstBaron }}" step="any" />
                                 </td>
                             </tr>
                             <tr>
@@ -104,7 +104,7 @@ Manage your fantasy league {{ fantasy.leagueName }}
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="firstDragon_points"
                                         name="firstDragon_points" placeholder="{{ fantasy.firstDragon }}"
-                                        value="{{ fantasy.firstDragon }}" />
+                                        value="{{ fantasy.firstDragon }}" step="any" />
                                 </td>
                             </tr>
                             <tr>
@@ -112,7 +112,7 @@ Manage your fantasy league {{ fantasy.leagueName }}
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="firstTower_points"
                                         name="firstTower_points" placeholder="{{ fantasy.firstTower }}"
-                                        value="{{ fantasy.firstTower }}" />
+                                        value="{{ fantasy.firstTower }}" step="any" />
                                 </td>
                             </tr>
                             <tr>
@@ -120,14 +120,15 @@ Manage your fantasy league {{ fantasy.leagueName }}
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="firstBlood_points"
                                         name="firstBlood_points" placeholder="{{ fantasy.firstBlood }}"
-                                        value="{{ fantasy.firstBlood }}" />
+                                        value="{{ fantasy.firstBlood }}" step="any" />
                                 </td>
                             </tr>
                             <tr>
                                 <td style="width: 50%;">Solo kill</td>
                                 <td style="width: 20%;">
-                                    <input type="number" class="form-control" id="soloKill_points" name="kill_points"
-                                        placeholder="{{ fantasy.soloKill }}" value="{{ fantasy.soloKill }}" />
+                                    <input type="number" class="form-control" id="soloKill_points"
+                                        name="soloKill_points" placeholder="{{ fantasy.soloKill }}"
+                                        value="{{ fantasy.soloKill }}" step="any" />
                                 </td>
                             </tr>
                             <tr>
@@ -135,7 +136,7 @@ Manage your fantasy league {{ fantasy.leagueName }}
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="morecs15_points"
                                         name="morecs15_points" placeholder="{{ fantasy.morecs15 }}"
-                                        value="{{ fantasy.morecs15 }}" />
+                                        value="{{ fantasy.morecs15 }}" step="any" />
                                 </td>
                             </tr>
                         </tbody>
@@ -148,42 +149,42 @@ Manage your fantasy league {{ fantasy.leagueName }}
                                 <td style="width: 50%;">Baron kills</td>
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="baron_points" name="baron_points"
-                                        placeholder="{{ fantasy.baron }}" value="{{ fantasy.baron }}" />
+                                        placeholder="{{ fantasy.baron }}" value="{{ fantasy.baron }}" step="any" />
                                 </td>
                             </tr>
                             <tr>
                                 <td style="width: 50%;">Dragon kills</td>
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="dragon_points" name="dragon_points"
-                                        placeholder="{{ fantasy.dragon }}" value="{{ fantasy.dragon }}" />
+                                        placeholder="{{ fantasy.dragon }}" value="{{ fantasy.dragon }}" step="any" />
                                 </td>
                             </tr>
                             <tr>
                                 <td style="width: 50%;">Towers destroyed</td>
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="tower_points" name="tower_points"
-                                        placeholder="{{ fantasy.tower }}" value="{{ fantasy.tower }}" />
+                                        placeholder="{{ fantasy.tower }}" value="{{ fantasy.tower }}" step="any" />
                                 </td>
                             </tr>
                             <tr>
                                 <td style="width: 50%;">Soul claimed</td>
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="soul_points" name="soul_points"
-                                        placeholder="{{ fantasy.soul }}" value="{{ fantasy.soul }}" />
+                                        placeholder="{{ fantasy.soul }}" value="{{ fantasy.soul }}" step="any" />
                                 </td>
                             </tr>
                             <tr>
                                 <td style="width: 50%;">Elder kills</td>
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="elder_points" name="elder_points"
-                                        placeholder="{{ fantasy.elder }}" value="{{ fantasy.elder }}" />
+                                        placeholder="{{ fantasy.elder }}" value="{{ fantasy.elder }}" step="any" />
                                 </td>
                             </tr>
                             <tr>
                                 <td style="width: 50%;">Win (not working)</td>
                                 <td style="width: 20%;">
                                     <input type="number" class="form-control" id="win_points" name="win_points"
-                                        placeholder="{{ fantasy.win }}" value="{{ fantasy.win }}" />
+                                        placeholder="{{ fantasy.win }}" value="{{ fantasy.win }}" step="any" />
                                 </td>
                             </tr>
                         </tbody>
@@ -238,14 +239,18 @@ Manage your fantasy league {{ fantasy.leagueName }}
                                                 {% endfor %}
                                             </td>
                                             <td style="width: 20%;">
-                                                {{matchup.points1}}
+                                                {% if matchup.total1 %}
+                                                {{'%0.2f'| format(matchup.total1) }}
+                                                {% endif %}
                                             </td>
                                             <td style="width: 20%">
                                                 <a class="nav-item nav-link" id="Home"
                                                     href="/matchup?leagueid={{fantasy.id}}&m={{matchup.id}}">View</a>
                                             </td>
                                             <td style="width: 20%;">
-                                                {{matchup.points2}}
+                                                {% if matchup.total2 %}
+                                                {{'%0.2f'| format(matchup.total2) }}
+                                                {% endif %}
                                             </td>
                                             <td style="width: 20%;">
                                                 {% for team in fantasy.teams %}
