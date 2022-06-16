@@ -95,7 +95,7 @@
       var text = $(obj.element).text();
       if (data && data['img_src']) {
         img_src = data['img_src'];
-        template = $("<div><img src=\"" + img_src + "\" style=\"margin:-15px-15px;width:30px;height:30px;\"/> </div>");
+        template = $("<div><img src=\"" + img_src + "\" style=\"margin:-15px-15px;width:60px;height:60px;\"/> </div>");
         return template;
       }
     }
@@ -124,8 +124,8 @@
     $('#id_team2_mid_pick1').select2(options);
     $('#id_team2_bottom_pick1').select2(options);
     $('#id_team2_support_pick1').select2(options);
-    $('.select2-container--default .select2-selection--single').css({ 'height': '30px', 'width': '30px', 'background-image': 'none', 'padding': '0px' });
-    $('.select2-selection__rendered').css({ 'margin': '-2px -9px' })
+    $('.select2-container--default .select2-selection--single').css({ 'height': '60px', 'width': '60px', 'background-image': 'none', 'padding': '0px' });
+    $('.select2-selection__rendered').css({ 'margin': '-1px -9px' })
   </script>
   <script src="{{url_for('static', filename='main.js')}}" type="text/javascript"></script>
 

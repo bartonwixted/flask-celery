@@ -274,103 +274,265 @@ def matchup():
         if request.form.get('pick1top') and (request.form.get('pick1top') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('pick1top')).first()
             print(champ.name)
-            matchup.pick1top.append(champ)
-            db.session.commit()
+            if not matchup.pick1top:
+                matchup.pick1top.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.pick1top
+                while bans:
+                    matchup.pick1top.remove(bans[0])
+                db.session.commit()
+                matchup.pick1top.append(champ)
+                db.session.commit()
         if request.form.get('ban1top') and (request.form.get('ban1top') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('ban1top')).first()
             print(champ.name)
-            matchup.ban1top.append(champ)
-            db.session.commit()
+            if not matchup.ban1top:
+                matchup.ban1top.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.ban1top
+                while bans:
+                    matchup.ban1top.remove(bans[0])
+                db.session.commit()
+                matchup.ban1top.append(champ)
+                db.session.commit()
+
         if request.form.get('pick1jungle') and (request.form.get('pick1jungle') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('pick1jungle')).first()
             print(champ.name)
-            matchup.pick1jungle.append(champ)
-            db.session.commit()
+            if not matchup.pick1jungle:
+                matchup.pick1jungle.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.pick1jungle
+                while bans:
+                    matchup.pick1jungle.remove(bans[0])
+                db.session.commit()
+                matchup.pick1jungle.append(champ)
+                db.session.commit()
         if request.form.get('ban1jungle') and (request.form.get('ban1jungle') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('ban1jungle')).first()
             print(champ.name)
-            matchup.ban1jungle.append(champ)
-            db.session.commit()
+            if not matchup.ban1jungle:
+                matchup.ban1jungle.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.ban1jungle
+                while bans:
+                    matchup.ban1jungle.remove(bans[0])
+                db.session.commit()
+                matchup.ban1jungle.append(champ)
+                db.session.commit()
         if request.form.get('pick1mid') and (request.form.get('pick1mid') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('pick1mid')).first()
             print(champ.name)
-            matchup.pick1mid.append(champ)
-            db.session.commit()
+            if not matchup.pick1mid:
+                matchup.pick1mid.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.pick1mid
+                while bans:
+                    matchup.pick1mid.remove(bans[0])
+                db.session.commit()
+                matchup.pick1mid.append(champ)
+                db.session.commit()
         if request.form.get('ban1mid') and (request.form.get('ban1mid') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('ban1mid')).first()
             print(champ.name)
-            matchup.ban1mid.append(champ)
-            db.session.commit()
+            if not matchup.ban1mid:
+                matchup.ban1mid.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.ban1mid
+                while bans:
+                    matchup.ban1mid.remove(bans[0])
+                db.session.commit()
+                matchup.ban1mid.append(champ)
+                db.session.commit()
         if request.form.get('pick1bottom') and (request.form.get('pick1bottom') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('pick1bottom')).first()
             print(champ.name)
-            matchup.pick1bottom.append(champ)
-            db.session.commit()
+            if not matchup.pick1bottom:
+                matchup.pick1bottom.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.pick1bottom
+                while bans:
+                    matchup.pick1bottom.remove(bans[0])
+                db.session.commit()
+                matchup.pick1bottom.append(champ)
+                db.session.commit()
         if request.form.get('ban1bottom') and (request.form.get('ban1bottom') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('ban1bottom')).first()
             print(champ.name)
-            matchup.ban1bottom.append(champ)
-            db.session.commit()
+            if not matchup.ban1bottom:
+                matchup.ban1bottom.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.ban1bottom
+                while bans:
+                    matchup.ban1bottom.remove(bans[0])
+                db.session.commit()
+                matchup.ban1bottom.append(champ)
+                db.session.commit()
         if request.form.get('pick1support') and (request.form.get('pick1support') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('pick1support')).first()
             print(champ.name)
-            matchup.pick1support.append(champ)
-            db.session.commit()
+            if not matchup.pick1support:
+                matchup.pick1support.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.pick1support
+                while bans:
+                    matchup.pick1support.remove(bans[0])
+                db.session.commit()
+                matchup.pick1support.append(champ)
+                db.session.commit()
         if request.form.get('ban1support') and (request.form.get('ban1support') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('ban1support')).first()
             print(champ.name)
-            matchup.ban1support.append(champ)
-            db.session.commit()
+            if not matchup.ban1support:
+                matchup.ban1support.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.ban1support
+                while bans:
+                    matchup.ban1support.remove(bans[0])
+                db.session.commit()
+                matchup.ban1support.append(champ)
+                db.session.commit()
         if request.form.get('pick2top') and (request.form.get('pick2top') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('pick2top')).first()
             print(champ.name)
-            matchup.pick2top.append(champ)
-            db.session.commit()
+            if not matchup.pick2top:
+                matchup.pick2top.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.pick2top
+                while bans:
+                    matchup.pick2top.remove(bans[0])
+                db.session.commit()
+                matchup.pick2top.append(champ)
+                db.session.commit()
         if request.form.get('ban2top') and (request.form.get('ban2top') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('ban2top')).first()
             print(champ.name)
-            matchup.ban2top.append(champ)
-            db.session.commit()
+            if not matchup.ban2top:
+                matchup.ban2top.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.ban2top
+                while bans:
+                    matchup.ban2top.remove(bans[0])
+                db.session.commit()
+                matchup.ban2top.append(champ)
+                db.session.commit()
+
         if request.form.get('pick2jungle') and (request.form.get('pick2jungle') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('pick2jungle')).first()
             print(champ.name)
-            matchup.pick2jungle.append(champ)
-            db.session.commit()
+            if not matchup.pick2jungle:
+                matchup.pick2jungle.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.pick2jungle
+                while bans:
+                    matchup.pick2jungle.remove(bans[0])
+                db.session.commit()
+                matchup.pick2jungle.append(champ)
+                db.session.commit()
         if request.form.get('ban2jungle') and (request.form.get('ban2jungle') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('ban2jungle')).first()
             print(champ.name)
-            matchup.ban2jungle.append(champ)
-            db.session.commit()
+            if not matchup.ban2jungle:
+                matchup.ban2jungle.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.ban2jungle
+                while bans:
+                    matchup.ban2jungle.remove(bans[0])
+                db.session.commit()
+                matchup.ban2jungle.append(champ)
+                db.session.commit()
         if request.form.get('pick2mid') and (request.form.get('pick2mid') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('pick2mid')).first()
             print(champ.name)
-            matchup.pick2mid.append(champ)
-            db.session.commit()
+            if not matchup.pick2mid:
+                matchup.pick2mid.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.pick2mid
+                while bans:
+                    matchup.pick2mid.remove(bans[0])
+                db.session.commit()
+                matchup.pick2mid.append(champ)
+                db.session.commit()
         if request.form.get('ban2mid') and (request.form.get('ban2mid') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('ban2mid')).first()
             print(champ.name)
-            matchup.ban2mid.append(champ)
-            db.session.commit()
+            if not matchup.ban2mid:
+                matchup.ban2mid.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.ban2mid
+                while bans:
+                    matchup.ban2mid.remove(bans[0])
+                db.session.commit()
+                matchup.ban2mid.append(champ)
+                db.session.commit()
         if request.form.get('pick2bottom') and (request.form.get('pick2bottom') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('pick2bottom')).first()
             print(champ.name)
-            matchup.pick2bottom.append(champ)
-            db.session.commit()
+            if not matchup.pick2bottom:
+                matchup.pick2bottom.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.pick2bottom
+                while bans:
+                    matchup.pick2bottom.remove(bans[0])
+                db.session.commit()
+                matchup.pick2bottom.append(champ)
+                db.session.commit()
         if request.form.get('ban2bottom') and (request.form.get('ban2bottom') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('ban2bottom')).first()
             print(champ.name)
-            matchup.ban2bottom.append(champ)
-            db.session.commit()
+            if not matchup.ban2bottom:
+                matchup.ban2bottom.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.ban2bottom
+                while bans:
+                    matchup.ban2bottom.remove(bans[0])
+                db.session.commit()
+                matchup.ban2bottom.append(champ)
+                db.session.commit()
         if request.form.get('pick2support') and (request.form.get('pick2support') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('pick2support')).first()
             print(champ.name)
-            matchup.pick2support.append(champ)
-            db.session.commit()
+            if not matchup.pick2support:
+                matchup.pick2support.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.pick2support
+                while bans:
+                    matchup.pick2support.remove(bans[0])
+                db.session.commit()
+                matchup.pick2support.append(champ)
+                db.session.commit()
         if request.form.get('ban2support') and (request.form.get('ban2support') != 'none'):
             champ = Champion.query.filter_by(name = request.form.get('ban2support')).first()
             print(champ.name)
-            matchup.ban2support.append(champ)
-            db.session.commit()
+            if not matchup.ban2support:
+                matchup.ban2support.append(champ)
+                db.session.commit()
+            else:
+                bans = matchup.ban2support
+                while bans:
+                    matchup.ban2support.remove(bans[0])
+                db.session.commit()
+                matchup.ban2support.append(champ)
+                db.session.commit()
                 
 
 
@@ -383,14 +545,17 @@ def matchup():
     team2 = Fantasyteam.query.filter_by(id=matchup.team2).first()
     tournament = Tournament.query.filter_by(id=fantasy.tournament).first()
     champions = Champion.query.all()
-    now = datetime.datetime.today()
+    now = datetime.today()
     print(round)
     print(fantasy)
     print(matchup)
 
+    times = []
+
     for role in team1.roles:
         for game in role.games:
             if game.round == round.number:
+                times.append(game.date)
                 print(game.date)
                 print(game.champion)
                 if not game.champion and game.date < datetime.today():
@@ -446,6 +611,7 @@ def matchup():
     for role in team2.roles:
         for game in role.games:
             if game.round == round.number:
+                times.append(game.date)
                 print(game)
                 print(game.champion)
                 if not game.champion and game.date < datetime.today():
@@ -504,10 +670,15 @@ def matchup():
         # if worker is finished, pull and store all the data.
     # If there is no champ entry and no worker, create a worker.
 
+    if min(times) < now:
+        picks_locked = True
+    else:
+        picks_locked = False
+
     return render_template(
         "matchup.html",
         user=current_user,
-        name=current_user.username, team1=team1, team2=team2, matchup=matchup, fantasy=fantasy, round=round, tournament=tournament, bestof=1, champions=champions, now = now)
+        name=current_user.username, team1=team1, team2=team2, matchup=matchup, fantasy=fantasy, round=round, tournament=tournament, bestof=1, champions=champions, now = now, first_match = min(times), picks_locked = picks_locked)
 
 
 @main_blueprint.route("/manage", methods=['GET', 'POST'])

@@ -21,6 +21,11 @@ query? handle server side, I think.. {% endblock %} {% block content %}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1,
             shrink-to-fit=no">
+Time until picks locked: {{first_match - now}}
+{{user.id}}
+{{team1.owner}}
+{{team2.owner}}
+
 <form method="POST">
   <table style="width: 100%" border="1">
     <tbody>
@@ -60,7 +65,9 @@ query? handle server side, I think.. {% endblock %} {% block content %}
                   <table style="border-collapse: collapse; width: 100%;" border="1">
                     <tbody>
                       <tr>
+                        {% if user.id == team2.owner %}
                         <td style="width: 10%;">
+                          {% if picks_locked %}
                           {% if matchup['ban1'+role.role] %}
                           {% for champ in matchup['ban1' + role.role] %}
                           <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;" border="1">
@@ -78,8 +85,48 @@ query? handle server side, I think.. {% endblock %} {% block content %}
                             <tbody>
                               <tr>
                                 <td style="width: 10%; text-align: center;">
+                                  <img src="/static/img/league/champs/empty.png" width="30" height="30" />
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          {% endif %}
+                          {% else %}
+                          {% if matchup['ban1' + role.role] %}
+                          <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;" border="1">
+                            <tbody>
+                              <tr>
+                                <td style="width: 10%; text-align: center;">
                                   <select id={{"id_team1_" + role.role + "_ban1" }} name={{"ban1" + role.role }}
-                                    align="center" style="width:30px;height:30px;padding:0px"
+                                    align="center" style="width:60px;height:60px;padding:1px"
+                                    searchable="Search here..">
+                                    <div style="margin:-15px">
+                                      {% for champ in matchup['ban1' + role.role] %}
+                                      <option data-img_src="/static/img/league/champs/{{champ.name}}.png" value="none">
+                                        {{champ.name}}
+                                      </option>
+                                      {% endfor %}
+                                    </div>
+                                    {% for champ in champions|sort(attribute="name") %}
+                                    <div style="margin:-15px">
+                                      {% if champ not in matchup['ban1' + role.role] %}
+                                      <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
+                                        value="{{ champ.name }}">{{ champ.name }}</option>
+                                      {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                  </select>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          {% else %}
+                          <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;" border="1">
+                            <tbody>
+                              <tr>
+                                <td style="width: 10%; text-align: center;">
+                                  <select id={{"id_team1_" + role.role + "_ban1" }} name={{"ban1" + role.role}}
+                                    align="center" style="width:60px;height:60px;padding:1px"
                                     searchable="Search here..">
                                     <div style="margin:-15px">
                                       <option data-img_src="/static/img/league/champs/empty.jpg" value="none">none
@@ -97,8 +144,12 @@ query? handle server side, I think.. {% endblock %} {% block content %}
                             </tbody>
                           </table>
                           {% endif %}
+                          {% endif %}
                         </td>
+                        {% endif %}
+                        {% if user.id == team1.owner %}
                         <td style="width: 10%;">
+                          {% if picks_locked %}
                           {% if matchup['pick1' + role.role] %}
                           {% for champ in matchup['pick1' + role.role] %}
                           <table style="border-collapse: collapse; width: 10%; background-color: #34A853;" border="1">
@@ -112,12 +163,52 @@ query? handle server side, I think.. {% endblock %} {% block content %}
                           </table>
                           {% endfor %}
                           {% else %}
+                          <table style="border-collapse: collapse; width: 10%; background-color: #34A853;" border="1">
+                            <tbody>
+                              <tr>
+                                <td style="width: 10%; text-align: center;">
+                                  <img src="/static/img/league/champs/empty.png" width="30" height="30" />
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          {% endif %}
+                          {% else %}
+                          {% if matchup['pick1' + role.role] %}
                           <table style="border-collapse: collapse; width: 10%;  background-color: #34A853;" border="1">
                             <tbody>
                               <tr>
                                 <td style="width: 10%; text-align: center;">
                                   <select id={{"id_team1_" + role.role + "_pick1" }} name={{"pick1" + role.role}}
-                                    align="center" style="width:30px;height:30px;padding:0px"
+                                    align="center" style="width:60px;height:60px;padding:15px"
+                                    searchable="Search here..">
+                                    <div style="margin:-15px">
+                                      {% for champ in matchup['pick1' + role.role] %}
+                                      <option data-img_src="/static/img/league/champs/{{champ.name}}.png" value="none">
+                                        {{champ.name}}
+                                      </option>
+                                      {% endfor %}
+                                    </div>
+                                    {% for champ in champions|sort(attribute="name") %}
+                                    <div style="margin:-15px">
+                                      {% if champ not in matchup['pick1' + role.role] %}
+                                      <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
+                                        value="{{ champ.name }}">{{ champ.name }}</option>
+                                      {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                  </select>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          {% else %}
+                          <table style="border-collapse: collapse; width: 10%;  background-color: #34A853;" border="1">
+                            <tbody>
+                              <tr>
+                                <td style="width: 10%; text-align: center;">
+                                  <select id={{"id_team1_" + role.role + "_pick1" }} name={{"pick1" + role.role}}
+                                    align="center" style="width:60px;height:60px;padding:0px"
                                     searchable="Search here..">
                                     <div style="margin:-15px">
                                       <option data-img_src="/static/img/league/champs/empty.jpg" value="none">none
@@ -135,7 +226,10 @@ query? handle server side, I think.. {% endblock %} {% block content %}
                             </tbody>
                           </table>
                           {% endif %}
+
+                          {% endif %}
                         </td>
+                        {% endif %}
                       </tr>
                     </tbody>
                   </table>
@@ -418,7 +512,10 @@ query? handle server side, I think.. {% endblock %} {% block content %}
                   <table style="border-collapse: collapse; width: 100%;" border="1">
                     <tbody>
                       <tr>
+
+                        {% if user.id == team2.owner %}
                         <td style="width: 10%;">
+                          {% if picks_locked %}
                           {% if matchup['pick2' + role.role] %}
                           {% for champ in matchup['pick2' + role.role] %}
                           <table style="border-collapse: collapse; width: 10%; background-color: #34A853;" border="1">
@@ -432,12 +529,52 @@ query? handle server side, I think.. {% endblock %} {% block content %}
                           </table>
                           {% endfor %}
                           {% else %}
+                          <table style="border-collapse: collapse; width: 10%; background-color: #34A853;" border="1">
+                            <tbody>
+                              <tr>
+                                <td style="width: 10%; text-align: center;">
+                                  <img src="/static/img/league/champs/empty.png" width="30" height="30" />
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          {% endif %}
+                          {% else %}
+                          {% if matchup['pick2' + role.role] %}
                           <table style="border-collapse: collapse; width: 10%;  background-color: #34A853;" border="1">
                             <tbody>
                               <tr>
                                 <td style="width: 10%; text-align: center;">
                                   <select id={{"id_team2_" + role.role + "_pick1" }} name={{"pick2" + role.role}}
-                                    align="center" style="width:30px;height:30px;padding:0px"
+                                    align="center" style="width:60px;height:60px;padding:15px"
+                                    searchable="Search here..">
+                                    <div style="margin:-15px">
+                                      {% for champ in matchup['pick2' + role.role] %}
+                                      <option data-img_src="/static/img/league/champs/{{champ.name}}.png" value="none">
+                                        {{champ.name}}
+                                      </option>
+                                      {% endfor %}
+                                    </div>
+                                    {% for champ in champions|sort(attribute="name") %}
+                                    <div style="margin:-15px">
+                                      {% if champ not in matchup['pick2' + role.role] %}
+                                      <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
+                                        value="{{ champ.name }}">{{ champ.name }}</option>
+                                      {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                  </select>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          {% else %}
+                          <table style="border-collapse: collapse; width: 10%;  background-color: #34A853;" border="1">
+                            <tbody>
+                              <tr>
+                                <td style="width: 10%; text-align: center;">
+                                  <select id={{"id_team2_" + role.role + "_pick1" }} name={{"pick2" + role.role}}
+                                    align="center" style="width:60px;height:60px;padding:0px"
                                     searchable="Search here..">
                                     <div style="margin:-15px">
                                       <option data-img_src="/static/img/league/champs/empty.jpg" value="none">none
@@ -455,8 +592,13 @@ query? handle server side, I think.. {% endblock %} {% block content %}
                             </tbody>
                           </table>
                           {% endif %}
+
+                          {% endif %}
                         </td>
+                        {% endif %}
+                        {% if user.id == team1.owner %}
                         <td style="width: 10%;">
+                          {% if picks_locked %}
                           {% if matchup['ban2'+role.role] %}
                           {% for champ in matchup['ban2' + role.role] %}
                           <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;" border="1">
@@ -474,8 +616,48 @@ query? handle server side, I think.. {% endblock %} {% block content %}
                             <tbody>
                               <tr>
                                 <td style="width: 10%; text-align: center;">
+                                  <img src="/static/img/league/champs/empty.png" width="30" height="30" />
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          {% endif %}
+                          {% else %}
+                          {% if matchup['ban2' + role.role] %}
+                          <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;" border="1">
+                            <tbody>
+                              <tr>
+                                <td style="width: 10%; text-align: center;">
+                                  <select id={{"id_team2_" + role.role + "_ban1" }} name={{"ban2" + role.role }}
+                                    align="center" style="width:60px;height:60px;padding:1px"
+                                    searchable="Search here..">
+                                    <div style="margin:-15px">
+                                      {% for champ in matchup['ban2' + role.role] %}
+                                      <option data-img_src="/static/img/league/champs/{{champ.name}}.png" value="none">
+                                        {{champ.name}}
+                                      </option>
+                                      {% endfor %}
+                                    </div>
+                                    {% for champ in champions|sort(attribute="name") %}
+                                    <div style="margin:-15px">
+                                      {% if champ not in matchup['ban2' + role.role] %}
+                                      <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
+                                        value="{{ champ.name }}">{{ champ.name }}</option>
+                                      {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                  </select>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          {% else %}
+                          <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;" border="1">
+                            <tbody>
+                              <tr>
+                                <td style="width: 10%; text-align: center;">
                                   <select id={{"id_team2_" + role.role + "_ban1" }} name={{"ban2" + role.role}}
-                                    align="center" style="width:30px;height:30px;padding:0px"
+                                    align="center" style="width:60px;height:60px;padding:1px"
                                     searchable="Search here..">
                                     <div style="margin:-15px">
                                       <option data-img_src="/static/img/league/champs/empty.jpg" value="none">none
@@ -493,8 +675,9 @@ query? handle server side, I think.. {% endblock %} {% block content %}
                             </tbody>
                           </table>
                           {% endif %}
+                          {% endif %}
                         </td>
-
+                        {% endif %}
                       </tr>
                     </tbody>
                   </table>

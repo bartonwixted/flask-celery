@@ -577,3 +577,8 @@ RuntimeError: No application found. Either work inside a view function or push a
 [2022-06-16 05:00:09,069: INFO/MainProcess] mingle: all alone
 [2022-06-16 05:00:09,078: INFO/MainProcess] celery@6994d7e71274 ready.
 [2022-06-16 05:00:12,914: INFO/MainProcess] Events of group {task} enabled by remote.
+[2022-06-16 13:46:36,065: INFO/MainProcess] Connected to redis://redis:6379/0
+[2022-06-16 13:46:36,068: INFO/MainProcess] mingle: searching for neighbors
+[2022-06-16 13:46:37,076: INFO/MainProcess] mingle: all alone
+[2022-06-16 13:46:37,087: INFO/MainProcess] celery@6994d7e71274 ready.
+[2022-06-16 13:46:41,064: INFO/MainProcess] Events of group {task} enabled by remote.
