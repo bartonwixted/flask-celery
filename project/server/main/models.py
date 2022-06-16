@@ -131,8 +131,8 @@ class Fantasyleague(db.Model):
     active = db.Column(db.Boolean)
 
     # settings
-    pickmul = db.Column(db.Float)
-    banmul = db.Column(db.Float)
+    pickmul = db.Column(db.Float, default=2.0)
+    banmul = db.Column(db.Float, default=0.5)
 
     # player stats points
     kill = db.Column(db.Float, default=3.0)
@@ -240,6 +240,10 @@ class Tournament(db.Model):
     # tournament name/title
     name = db.Column(db.String(20))
 
+    #there are technically multiple tournaments in a season - regular season and playoffs.
+    #MSI/worlds have more stages still.
+    stage = db.Column(db.String(20))
+
     # how many teams are in this tournament?
     teamnum = db.Column(db.Integer)
 
@@ -298,6 +302,9 @@ class Gamestats(db.Model):
 
     # we want to track which player actually played each game
     name = db.Column(db.String(20))
+
+    #we want to track the worker ID that has these game stats.
+    worker = db.Column(db.String(50))
 
     # get riot esportsIds for player, game, match (used to pull from esports API)
     playerId = db.Column(db.Integer)

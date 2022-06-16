@@ -20,21 +20,22 @@ def pull_league_teams(tournament_id):
 
     teams = []
 
-    teamlist = standings['standings'][0]['stages'][0]['sections'][0]['rankings']
+    rankings = standings['standings'][0]['stages'][0]['sections'][0]['rankings']
 
-    for i in teamlist:
-        teams.append({})
-        teams[-1] = {}
-        teams[-1]['esportsId'] = i['teams'][0]['id']
-        teams[-1]['name'] = i['teams'][0]['name']
-        teams[-1]['code'] = i['teams'][0]['code']
-        teams[-1]['slug'] = i['teams'][0]['slug']
-        if not os.path.exists('project/client/static/img/league/teams/' + teams[-1]['code'] + '.png'):
-            team_logo = requests.get(i['teams'][0]['image'])
-            file = open('project/client/static/img/league/teams/' +
-                        teams[-1]['code'] + '.png', 'wb')
-            file.write(team_logo.content)
-            file.close()
+    for rank in rankings:
+        for i in rank['teams']:
+            teams.append({})
+            teams[-1] = {}
+            teams[-1]['esportsId'] = i['id']
+            teams[-1]['name'] = i['name']
+            teams[-1]['code'] = i['code']
+            teams[-1]['slug'] = i['slug']
+            if not os.path.exists('project/client/static/img/league/teams/' + teams[-1]['code'] + '.png'):
+                team_logo = requests.get(i['image'])
+                file = open('project/client/static/img/league/teams/' +
+                            teams[-1]['code'] + '.png', 'wb')
+                file.write(team_logo.content)
+                file.close()
 
     return(teams)
 
@@ -90,11 +91,20 @@ def pull_leagues():
 
 
 def pull_league_tournaments(league_id):
-    print('lol')
+    tournaments = api.get_tournaments_for_league(league_id=league_id)
+    for tournament in tournaments['leagues'][0]['tournaments']:
+        if tournament['startDate'] >= str(datetime.datetime.today().date()):
+            print(tournament)
+            
+
+
+    #should output any tournamnents that are ongoing or haven't started yet.
+    return 1
 
 
 def pull_league_schedule(tournamentId, startDate, endDate):
     scheduleTemp = api.get_schedule(league_id=tournamentId)
+    schedule = scheduleTemp['schedule']['events']
     while(startDate < scheduleTemp['schedule']['events'][0]['startTime']):
 
         schedule = scheduleTemp['schedule']['events']
