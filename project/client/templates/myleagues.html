@@ -49,13 +49,15 @@ As participant:
                     {% for role in team.roles|selectattr("role", "equalto", this_role) %}
                     {% for player in role.players|selectattr("default", "equalto", true) %}
 
+
                     <td style="width: 15%; text-align: center">
                         {{player.name}} <img src="/static/img/league/icons/{{role.role}}_icon.webp" width="20"
                             height="20" />
                         <br />
-                        <img src="/static/img/league/players/{{tournaments[league.tournament-1].teams[player.team-1].code}}/{{ player.name }}.png"
+                        <img src="/static/img/league/players/{{teams[player.team-1].code}}/{{ player.name }}.png"
                             width="60" height="60" /> <br />
                     </td>
+
                     {% endfor %}
                     {% endfor %}
                     {% endfor %}

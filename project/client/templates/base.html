@@ -36,6 +36,7 @@
         <a class="nav-item nav-link" id="Login" href="/login">Login</a>
         <a class="nav-item nav-link" id="Sign Up" href="/sign-up">Sign Up</a>
         {% endif %}
+        {% block navbar %}{% endblock %}
 
       </div>
     </div>
@@ -128,7 +129,8 @@
     $('.select2-selection__rendered').css({ 'margin': '-1px -9px' })
   </script>
   <script src="{{url_for('static', filename='main.js')}}" type="text/javascript"></script>
-
+  {% block scripts %}
+  {% endblock %}
 </body>
 
 </html>

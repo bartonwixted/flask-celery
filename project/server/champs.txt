@@ -87,6 +87,7 @@ Nunu
 Olaf
 Orianna
 Orianna
+Ornn
 Pantheon
 Poppy
 Pyke

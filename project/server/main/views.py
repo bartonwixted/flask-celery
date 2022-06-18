@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User, Gamestats, Fantasyleague, Fantasyteam, Tournament, Player, Team, League, Matchup, Round, Role, Champion
 from project.server import db
 from flask_login import login_user, login_required, logout_user, current_user
-from datetime import datetime
+from datetime import datetime, timedelta
 from project.server.tasks import create_task, background_scrape
 from project.server.main.lolesports_api import Lolesports_API
 from project.server.main.lolscrape import pull_league_teams, pull_league_tournaments, pull_team_players, pull_leagues, pull_league_schedule, pull_game_data
@@ -96,7 +96,7 @@ def myleagues():
         league = request.form.get("league")
 
         # we should probably just get the most recent season tbh
-        now = '2022-02-02' #str(datetime.today().date())
+        now = '2022-06-15' #str(datetime.today().date())
 
         # check to see what tournaments are available
         allTournaments = api.get_tournaments_for_league(league_id=league)
@@ -197,39 +197,21 @@ def myleagues():
         print(now)
     allLeagues = League.query.all()
     allTournaments = Tournament.query.all()
+    allTeams = Team.query.all()
     return render_template(
         "myleagues.html",
         user=current_user,
         name=current_user.username,
         now=str(datetime.today()),
         leagues=allLeagues,
-        tournaments=allTournaments)
+        tournaments=allTournaments,
+        teams = allTeams)
 
 
 @main_blueprint.route("/", methods=["GET"])
 def home():
-    return render_template("main/home.html", user=current_user)
-
-
-@main_blueprint.route("/tasks", methods=["POST"])
-def run_task():
-    content = request.json
-    task_type = content["type"]
-    print(task_type)
-
-    task = create_task.delay(int(task_type))
-    return jsonify({"task_id": task.id}), 202
-
-
-@main_blueprint.route("/tasks/<task_id>", methods=["GET"])
-def get_status(task_id):
-    task_result = AsyncResult(task_id)
-    result = {
-        "task_id": task_id,
-        "task_status": task_result.status,
-        "task_result": task_result.result
-    }
-    return jsonify(result), 200
+    champs = Champion.query.all()
+    return render_template("home.html", user=current_user, champs=champs)
 
 
 @main_blueprint.route("/matchup", methods=['GET', 'POST'])
@@ -527,7 +509,7 @@ def matchup():
             times.append(game.date)
             print(game.date)
             print(game.champion)
-            if not game.champion and game.date < datetime.today():
+            if not game.champion and (game.date + timedelta(hours = 1)) < datetime.today():
                 if not game.worker:
                     task = background_scrape.delay(game.gameId)
                     thisGame = Gamestats.query.filter_by(gameId = game.gameId).all()
@@ -540,7 +522,7 @@ def matchup():
                         gamedata = task_progress.result
                         for data in gamedata:
                             dteam = Team.query.filter_by(
-                                esportsId=data['teamId']).first()
+                                esportsId=data['teamId'], tournament=tournament.id).first()
                             print(dteam.name)
                             drole = Role.query.filter_by(
                                 team=dteam.id, role=data['role']).first()
@@ -771,7 +753,7 @@ def matchup():
             times.append(game.date)
             print(game)
             print(game.champion)
-            if not game.champion and game.date < datetime.today():
+            if not game.champion and (game.date + timedelta(hours = 1)) < datetime.today():
                 if not game.worker:
                     task = background_scrape.delay(game.gameId)
                     thisGame = Gamestats.query.filter_by(gameId = game.gameId).all()
@@ -784,7 +766,7 @@ def matchup():
                         gamedata = task_progress.result
                         for data in gamedata:
                             dteam = Team.query.filter_by(
-                                esportsId=data['teamId']).first()
+                                esportsId=data['teamId'], tournament=tournament.id).first()
                             print(dteam.name)
                             drole = Role.query.filter_by(
                                 team=dteam.id, role=data['role']).first()
@@ -1004,7 +986,7 @@ def matchup():
         # if worker is finished, pull and store all the data.
     # If there is no champ entry and no worker, create a worker.
 
-    if min(times) > now:
+    if min(times) < now:
         picks_locked = True
     else:
         picks_locked = False
@@ -1012,7 +994,7 @@ def matchup():
     return render_template(
         "matchup.html",
         user=current_user,
-        name=current_user.username, team1=team1, team2=team2, matchup=matchup, fantasy=fantasy, round=round, tournament=tournament, bestof=1, champions=champions, now = now, first_match = min(times), picks_locked = picks_locked)
+        name=current_user.username, team1=team1, team2=team2, matchup=matchup, fantasy=fantasy, round=round, tournament=tournament, bestof=1, champions=champions, now = now, first_match = min(times).timestamp()*1000, picks_locked = picks_locked)
 
 
 @main_blueprint.route("/manage", methods=['GET', 'POST'])
@@ -1076,6 +1058,9 @@ def manage():
 
             blocks = []
             for i in schedule:
+                print(i)
+                if i['state'] == 'inProgress':
+                    i['blockName'] = 'Week 1'
                 if not i['blockName'] in blocks:
                     blocks.append(i['blockName'])
                     print(blocks)

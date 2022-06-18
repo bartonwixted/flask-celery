@@ -105,6 +105,8 @@ def pull_league_tournaments(league_id):
 def pull_league_schedule(tournamentId, startDate, endDate):
     scheduleTemp = api.get_schedule(league_id=tournamentId)
     schedule = scheduleTemp['schedule']['events']
+    while scheduleTemp['schedule']['pages']['newer'] and endDate > scheduleTemp['schedule']['events'][-1]['startTime']:
+        scheduleTemp = api.get_schedule(league_id=tournamentId, pageToken=scheduleTemp['schedule']['pages']['newer'])
     while(startDate < scheduleTemp['schedule']['events'][0]['startTime']):
 
         schedule = scheduleTemp['schedule']['events']
@@ -114,8 +116,8 @@ def pull_league_schedule(tournamentId, startDate, endDate):
         schedule = scheduleTemp['schedule']['events']
         schedule = schedule + schedule2
 
-    schedule = [d for d in schedule if d['startTime']
-                > startDate + 'T00:00:00Z']
+    schedule = [d for d in schedule if (d['startTime']
+                > startDate + 'T00:00:00Z') and (d['state'] != 'inProgress')]
 
     # schedule has some errors in it, unfortunately...
 

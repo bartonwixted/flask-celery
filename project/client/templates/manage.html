@@ -6,6 +6,8 @@ Manage your fantasy league {{ fantasy.leagueName }}
 
 {% endblock %}
 
+
+
 {% block content %}
 
 <h1 align="center">{{ fantasy.leagueName }}</h1>
@@ -417,15 +419,17 @@ Manage your fantasy league {{ fantasy.leagueName }}
                                             {% for this_role in roles_list %}
                                             {% for role in team.roles|selectattr("role", "equalto", this_role) %}
                                             {% for player in role.players|selectattr("default", "equalto", true) %}
+                                            {% for team in tournament.teams|selectattr("id", "equalto", player.team) %}
 
                                             <td style="width: 15%; text-align: center">
-                                                {{tournament.teams[player.team-1].code}} <br /> {{player.name}}
+                                                {{team.code}} <br /> {{player.name}}
                                                 <br /><img src="/static/img/league/icons/{{role.role}}_icon.webp"
                                                     width="20" height="20" />
                                                 <br />
-                                                <img src="/static/img/league/players/{{tournament.teams[player.team-1].code}}/{{ player.name }}.png"
+                                                <img src="/static/img/league/players/{{team.code}}/{{ player.name }}.png"
                                                     width="40" height="40" /> <br />
                                             </td>
+                                            {% endfor %}
                                             {% endfor %}
                                             {% endfor %}
                                             {% endfor %}

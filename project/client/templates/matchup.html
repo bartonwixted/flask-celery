@@ -1,6 +1,11 @@
 {% extends "base.html" %} {% block title %} {{week}} matchup, {{ name }} vs long
-query? handle server side, I think.. {% endblock %} {% block content %}
+query? handle server side, I think.. {% endblock %}
 
+{% block navbar %}
+<a class="nav-item nav-link" id="Fantasy" href="/manage?leagueid={{fantasy.id}}">{{fantasy.leagueName}}</a>
+{% endblock %}
+
+{% block content %}
 
 <style>
   .containerdiv {
@@ -21,742 +26,788 @@ query? handle server side, I think.. {% endblock %} {% block content %}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1,
             shrink-to-fit=no">
-Time until picks locked: {{first_match - now}}
-{{now}}
-{{user.id}}
-{{team1.owner}}
-{{team2.owner}}
+
+
+Time until picks locked: <p id="demo"></p>
 
 <form method="POST">
   <table style="width: 100%" border="1">
     <tbody>
       <tr>
         <td style="width: 50%">
+          {{team1.name}}
           {% set roles_list = ['top', 'jungle', 'mid', 'bottom', 'support'] %}
           {% for this_role in roles_list %}
           {% for role in team1.roles|selectattr("role", "equalto", this_role) %}
           {% for player in role.players|selectattr("default", "equalto", true) %}
-          <table style=" border-collapse: collapse; width: 100%; background-color: #EEEEEE" border="0">
-            <tbody>
-              <tr>
-                <td style="width: 110px; height: 43px;">
-                  <table style="border-collapse: collapse; width: 100%;" border="0">
-                    <tbody>
-                      <tr>
-                        <td style="width: 100%; text-align: center;">{{tournament.teams[player.team-1].code}}
-                          <br />
-                          {{ player.name }}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="width: 100%; text-align: center;">
-                          <div class="containerdiv">
-                            <img style="margin:0px" src="/static/img/league/icons/{{ role.role }}_icon.webp" width="100"
-                              height="100" />
-                            <img class="cornerimage"
-                              src="/static/img/league/players/{{tournament.teams[player.team-1].code}}/{{ player.name }}.png"
-                              width="100" height="100" />
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-                <td style="width: 10%;">
-                  <table style="border-collapse: collapse; width: 100%;" border="0">
-                    <tbody>
-                      <tr>
-                        {% if user.id == team2.owner or picks_locked%}
-                        <td style="width: 10%;">
-                          {% if picks_locked %}
-                          {% if matchup['ban1'+role.role] %}
-                          {% for champ in matchup['ban1' + role.role] %}
-                          {% if champ in matchup['pick1' + role.role] %}
-                          <table style="border-collapse: collapse; width: 10%;  background-color: #fbbc04;" border="1">
-                            {% else %}
-                            <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;"
-                              border="1">
-                              {% endif %}
-                              <tbody>
-                                <tr>
-                                  <td style="width: 10%; text-align: center;">
-                                    <img src="/static/img/league/champs/{{ champ.name }}.png" width="30" height="30" />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            {% endfor %}
-                            {% else %}
-                            <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;"
-                              border="1">
-                              <tbody>
-                                <tr>
-                                  <td style="width: 10%; text-align: center;">
-                                    <img src="/static/img/league/champs/empty.png" width="30" height="30" />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            {% endif %}
-                            {% else %}
-                            {% if matchup['ban1' + role.role] %}
-                            <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;"
-                              border="1">
-                              <tbody>
-                                <tr>
-                                  <td style="width: 10%; text-align: center;">
-                                    <select id={{"id_team1_" + role.role + "_ban1" }} name={{"ban1" + role.role }}
-                                      align="center" style="width:60px;height:60px;padding:1px"
-                                      searchable="Search here..">
-                                      <div style="margin:-15px">
-                                        {% for champ in matchup['ban1' + role.role] %}
-                                        <option data-img_src="/static/img/league/champs/{{champ.name}}.png"
-                                          value="none">
-                                          {{champ.name}}
-                                        </option>
-                                        {% endfor %}
-                                      </div>
-                                      {% for champ in champions|sort(attribute="name") %}
-                                      <div style="margin:-15px">
-                                        {% if champ not in matchup['ban1' + role.role] %}
-                                        <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
-                                          value="{{ champ.name }}">{{ champ.name }}</option>
-                                        {% endif %}
-                                      </div>
-                                      {% endfor %}
-                                    </select>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            {% else %}
-                            <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;"
-                              border="1">
-                              <tbody>
-                                <tr>
-                                  <td style="width: 10%; text-align: center;">
-                                    <select id={{"id_team1_" + role.role + "_ban1" }} name={{"ban1" + role.role}}
-                                      align="center" style="width:60px;height:60px;padding:1px"
-                                      searchable="Search here..">
-                                      <div style="margin:-15px">
-                                        <option data-img_src="/static/img/league/champs/empty.png" value="none">none
-                                        </option>
-                                      </div>
-                                      {% for champ in champions|sort(attribute="name") %}
-                                      <div style="margin:-15px">
-                                        <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
-                                          value="{{ champ.name }}">{{ champ.name }}</option>
-                                      </div>
-                                      {% endfor %}
-                                    </select>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            {% endif %}
-                            {% endif %}
-                        </td>
-                        {% endif %}
-                        {% if user.id == team1.owner or picks_locked %}
-                        <td style="width: 10%;">
-                          {% if picks_locked %}
-                          {% if matchup['pick1' + role.role] %}
-                          {% for champ in matchup['pick1' + role.role] %}
-                          {% if champ in matchup['ban1' + role.role] %}
-                          <table style="border-collapse: collapse; width: 10%;  background-color: #fbbc04;" border="1">
-                            {% else %}
-                            <table style="border-collapse: collapse; width: 10%; background-color: #34A853;" border="1">
-                              {% endif %}
-                              <tbody>
-                                <tr>
-                                  <td style="width: 10%; text-align: center;">
-                                    <img src="/static/img/league/champs/{{ champ.name }}.png" width="30" height="30" />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            {% endfor %}
-                            {% else %}
-                            <table style="border-collapse: collapse; width: 10%; background-color: #34A853;" border="1">
-                              <tbody>
-                                <tr>
-                                  <td style="width: 10%; text-align: center;">
-                                    <img src="/static/img/league/champs/empty.png" width="30" height="30" />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            {% endif %}
-                            {% else %}
-                            {% if matchup['pick1' + role.role] %}
-                            <table style="border-collapse: collapse; width: 10%;  background-color: #34A853;"
-                              border="1">
-                              <tbody>
-                                <tr>
-                                  <td style="width: 10%; text-align: center;">
-                                    <select id={{"id_team1_" + role.role + "_pick1" }} name={{"pick1" + role.role}}
-                                      align="center" style="width:60px;height:60px;padding:15px"
-                                      searchable="Search here..">
-                                      <div style="margin:-15px">
-                                        {% for champ in matchup['pick1' + role.role] %}
-                                        <option data-img_src="/static/img/league/champs/{{champ.name}}.png"
-                                          value="none">
-                                          {{champ.name}}
-                                        </option>
-                                        {% endfor %}
-                                      </div>
-                                      {% for champ in champions|sort(attribute="name") %}
-                                      <div style="margin:-15px">
-                                        {% if champ not in matchup['pick1' + role.role] %}
-                                        <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
-                                          value="{{ champ.name }}">{{ champ.name }}</option>
-                                        {% endif %}
-                                      </div>
-                                      {% endfor %}
-                                    </select>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            {% else %}
-                            <table style="border-collapse: collapse; width: 10%;  background-color: #34A853;"
-                              border="1">
-                              <tbody>
-                                <tr>
-                                  <td style="width: 10%; text-align: center;">
-                                    <select id={{"id_team1_" + role.role + "_pick1" }} name={{"pick1" + role.role}}
-                                      align="center" style="width:60px;height:60px;padding:0px"
-                                      searchable="Search here..">
-                                      <div style="margin:-15px">
-                                        <option data-img_src="/static/img/league/champs/empty.png" value="none">none
-                                        </option>
-                                      </div>
-                                      {% for champ in champions|sort(attribute="name") %}
-                                      <div style="margin:-15px">
-                                        <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
-                                          value="{{ champ.name }}">{{ champ.name }}</option>
-                                      </div>
-                                      {% endfor %}
-                                    </select>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            {% endif %}
+          {% if team1.owner == user.id %}
+          <table style=" border-collapse: collapse; width: 100%; background-color: #EEFFEE" border="0">
+            {% elif team2.owner == user.id %}
+            <table style=" border-collapse: collapse; width: 100%; background-color: #FFEEEE" border="0">
+              {% else %}
+              <table style=" border-collapse: collapse; width: 100%; background-color: #EEEEEE" border="0">
+                {% endif %}
+                <tbody>
+                  <tr>
+                    <td style="width: 110px; height: 43px;">
+                      {% for team in tournament.teams|selectattr("id", "equalto", player.team) %}
+                      <table style="border-collapse: collapse; width: 100%;" border="0">
+                        <tbody>
+                          <tr>
 
-                            {% endif %}
-                        </td>
-                        {% endif %}
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-                <td style="width: 70%;">
+                            <td style="width: 100%; text-align: center;">{{team.code}}
+                              <br />
+                              {{ player.name }}
+                            </td>
 
-                  {% for game in role.games|selectattr("round", "equalto", round.number) %}
-                  <table style="border-collapse: collapse; width: 100%; background-color: #AAAAEA; margin: 0px;"
-                    border="0">
-
-                    <tbody>
-                      <tr>
-                        <td style="width: 1%;">
-                          {% if game.champion %}
-                          {% if champions[game.champion-1] in matchup['ban1'+role.role] %}
-                          {% if champions[game.champion-1] in matchup['pick1'+role.role] %}
-                          <table style="border-collapse: collapse; width: 10%; background-color: #fbbc04;" border="1">
-                            {% else %}
-                            <table style="border-collapse: collapse; width: 10%; background-color: #EA4335;" border="1">
-                              {% endif %}
-                              {% elif champions[game.champion-1] in matchup['pick1' + role.role] %}
-                              <table style="border-collapse: collapse; width: 10%; background-color: #34A853;;"
+                          </tr>
+                          <tr>
+                            <td style="width: 100%; text-align: center;">
+                              <div class="containerdiv">
+                                <img style="margin:0px" src="/static/img/league/icons/{{ role.role }}_icon.webp"
+                                  width="100" height="100" />
+                                <img class="cornerimage"
+                                  src="/static/img/league/players/{{team.code}}/{{ player.name }}.png" width="100"
+                                  height="100" />
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      {% endfor %}
+                    </td>
+                    <td style="width: 10%;">
+                      <table style="border-collapse: collapse; width: 100%;" border="0">
+                        <tbody>
+                          <tr>
+                            {% if user.id == team2.owner or picks_locked%}
+                            <td style="width: 10%;">
+                              {% if picks_locked %}
+                              {% if matchup['ban1'+role.role] %}
+                              {% for champ in matchup['ban1' + role.role] %}
+                              {% if champ in matchup['pick1' + role.role] %}
+                              <table style="border-collapse: collapse; width: 10%;  background-color: #fbbc04;"
                                 border="1">
                                 {% else %}
-                                <table style="border-collapse: collapse; width: 10%; background-color: #000000;"
+                                <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;"
                                   border="1">
                                   {% endif %}
-
                                   <tbody>
                                     <tr>
-                                      <td style="width: 100%; text-align: center;">
-
-                                        <img title="{{champions[game.champion-1].name}}"
-                                          src="/static/img/league/champs/{{ champions[game.champion-1].name }}.png"
-                                          width="50" height="50" />
+                                      <td style="width: 10%; text-align: center;">
+                                        <img src="/static/img/league/champs/{{ champ.name }}.png" width="30"
+                                          height="30" />
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                {% endfor %}
+                                {% else %}
+                                <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;"
+                                  border="1">
+                                  <tbody>
+                                    <tr>
+                                      <td style="width: 10%; text-align: center;">
+                                        <img src="/static/img/league/champs/empty.png" width="30" height="30" />
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                {% endif %}
+                                {% else %}
+                                {% if matchup['ban1' + role.role] %}
+                                <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;"
+                                  border="1">
+                                  <tbody>
+                                    <tr>
+                                      <td style="width: 10%; text-align: center;">
+                                        <select id={{"id_team1_" + role.role + "_ban1" }} name={{"ban1" + role.role }}
+                                          align="center" style="width:60px;height:60px;padding:1px"
+                                          searchable="Search here..">
+                                          <div style="margin:-15px">
+                                            {% for champ in matchup['ban1' + role.role] %}
+                                            <option data-img_src="/static/img/league/champs/{{champ.name}}.png"
+                                              value="none">
+                                              {{champ.name}}
+                                            </option>
+                                            {% endfor %}
+                                          </div>
+                                          {% for champ in champions|sort(attribute="name") %}
+                                          <div style="margin:-15px">
+                                            {% if champ not in matchup['ban1' + role.role] %}
+                                            <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
+                                              value="{{ champ.name }}">{{ champ.name }}</option>
+                                            {% endif %}
+                                          </div>
+                                          {% endfor %}
+                                        </select>
                                       </td>
                                     </tr>
                                   </tbody>
                                 </table>
                                 {% else %}
-                                <table style="border-collapse: collapse; width: 10%; background-color: #000000;"
+                                <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;"
                                   border="1">
                                   <tbody>
                                     <tr>
-                                      <td style="width: 100%; text-align: center;">
-                                        <img title="None" src="/static/img/league/champs/empty.png" width="50"
-                                          height="50" />
+                                      <td style="width: 10%; text-align: center;">
+                                        <select id={{"id_team1_" + role.role + "_ban1" }} name={{"ban1" + role.role}}
+                                          align="center" style="width:60px;height:60px;padding:1px"
+                                          searchable="Search here..">
+                                          <div style="margin:-15px">
+                                            <option data-img_src="/static/img/league/champs/empty.png" value="none">none
+                                            </option>
+                                          </div>
+                                          {% for champ in champions|sort(attribute="name") %}
+                                          <div style="margin:-15px">
+                                            <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
+                                              value="{{ champ.name }}">{{ champ.name }}</option>
+                                          </div>
+                                          {% endfor %}
+                                        </select>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                {% endif %}
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                            {% if user.id == team1.owner or picks_locked %}
+                            <td style="width: 10%;">
+                              {% if picks_locked %}
+                              {% if matchup['pick1' + role.role] %}
+                              {% for champ in matchup['pick1' + role.role] %}
+                              {% if champ in matchup['ban1' + role.role] %}
+                              <table style="border-collapse: collapse; width: 10%;  background-color: #fbbc04;"
+                                border="1">
+                                {% else %}
+                                <table style="border-collapse: collapse; width: 10%; background-color: #34A853;"
+                                  border="1">
+                                  {% endif %}
+                                  <tbody>
+                                    <tr>
+                                      <td style="width: 10%; text-align: center;">
+                                        <img src="/static/img/league/champs/{{ champ.name }}.png" width="30"
+                                          height="30" />
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                {% endfor %}
+                                {% else %}
+                                <table style="border-collapse: collapse; width: 10%; background-color: #34A853;"
+                                  border="1">
+                                  <tbody>
+                                    <tr>
+                                      <td style="width: 10%; text-align: center;">
+                                        <img src="/static/img/league/champs/empty.png" width="30" height="30" />
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                {% endif %}
+                                {% else %}
+                                {% if matchup['pick1' + role.role] %}
+                                <table style="border-collapse: collapse; width: 10%;  background-color: #34A853;"
+                                  border="1">
+                                  <tbody>
+                                    <tr>
+                                      <td style="width: 10%; text-align: center;">
+                                        <select id={{"id_team1_" + role.role + "_pick1" }} name={{"pick1" + role.role}}
+                                          align="center" style="width:60px;height:60px;padding:15px"
+                                          searchable="Search here..">
+                                          <div style="margin:-15px">
+                                            {% for champ in matchup['pick1' + role.role] %}
+                                            <option data-img_src="/static/img/league/champs/{{champ.name}}.png"
+                                              value="none">
+                                              {{champ.name}}
+                                            </option>
+                                            {% endfor %}
+                                          </div>
+                                          {% for champ in champions|sort(attribute="name") %}
+                                          <div style="margin:-15px">
+                                            {% if champ not in matchup['pick1' + role.role] %}
+                                            <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
+                                              value="{{ champ.name }}">{{ champ.name }}</option>
+                                            {% endif %}
+                                          </div>
+                                          {% endfor %}
+                                        </select>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                {% else %}
+                                <table style="border-collapse: collapse; width: 10%;  background-color: #34A853;"
+                                  border="1">
+                                  <tbody>
+                                    <tr>
+                                      <td style="width: 10%; text-align: center;">
+                                        <select id={{"id_team1_" + role.role + "_pick1" }} name={{"pick1" + role.role}}
+                                          align="center" style="width:60px;height:60px;padding:0px"
+                                          searchable="Search here..">
+                                          <div style="margin:-15px">
+                                            <option data-img_src="/static/img/league/champs/empty.png" value="none">none
+                                            </option>
+                                          </div>
+                                          {% for champ in champions|sort(attribute="name") %}
+                                          <div style="margin:-15px">
+                                            <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
+                                              value="{{ champ.name }}">{{ champ.name }}</option>
+                                          </div>
+                                          {% endfor %}
+                                        </select>
                                       </td>
                                     </tr>
                                   </tbody>
                                 </table>
                                 {% endif %}
 
-                        </td>
-                        <td style="width: 90%;">
-                          <table style="border-collapse: collapse; width: 100%;" border="0">
-                            <tbody>
-                              <tr>
-                                <td style="text-align: center; width: 70%">
-                                  {% if game.kills is not none %}
-                                  {{ game.kills }}/{{ game.deaths }}/{{ game.assists }}
-                                  <img src="/static/img/league/icons/Minion_icon.webp" width="10" height="10" />
-                                  <span style="color: #000000">{{ game.cs }}</span>
-                                  /
-                                  <span style="color: #888888">{{ game.cs15 }}</span>
-                                  {% endif %}
-                                </td>
-                                <td style="text-align: center; width: 30%">
-                                  &nbsp;
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                    <td style="width: 70%;">
 
-                                  {% if game.firstTower == 1 %}
-                                  <img style="margin: -10px" src="/static/img/league/icons/tower-icon-first.png"
-                                    width="20" height="20" />
-                                  <img style="margin: -10px" src="/static/img/league/icons/tower-icon-first.png"
-                                    width="20" height="20" />
-                                  <img style="margin: -10px" src="/static/img/league/icons/tower-icon-first.png"
-                                    width="20" height="20" />
-                                  {% elif game.firstTower == 0 %}
-                                  <img style="margin: -10px" src="/static/img/league/icons/tower-icon.png" width="20"
-                                    height="20" />
-                                  <img style="margin: -10px" src="/static/img/league/icons/tower-icon.png" width="20"
-                                    height="20" />
-                                  <img style="margin: -10px" src="/static/img/league/icons/tower-icon.png" width="20"
-                                    height="20" />
-                                  {% endif %}
+                      {% for game in role.games|selectattr("round", "equalto", round.number) %}
+                      <table style="border-collapse: collapse; width: 100%; background-color: #AAAAEA; margin: 0px;"
+                        border="0">
 
-                                  &nbsp; x {{ game.towers }}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td style="text-align: center;">
-                                  {% if game.dragons %}
-                                  {% for i in range(game.dragons|length) %}
-                                  {% if game.dragons[i] != 'e' %}
-                                  {% if game.firstDragon and i == 0 %}
-                                  <img style="margin: -5px"
-                                    src="/static/img/league/icons/{{game.dragons[i]}}-dragon2-first.png" width="20"
-                                    height="20" />
-                                  {% else %}
+                        <tbody>
+                          <tr>
+                            <td style="width: 1%;">
+                              {% if game.champion %}
+                              {% if champions[game.champion-1] in matchup['ban1'+role.role] %}
+                              {% if champions[game.champion-1] in matchup['pick1'+role.role] %}
+                              <table style="border-collapse: collapse; width: 10%; background-color: #fbbc04;"
+                                border="1">
+                                {% else %}
+                                <table style="border-collapse: collapse; width: 10%; background-color: #EA4335;"
+                                  border="1">
+                                  {% endif %}
+                                  {% elif champions[game.champion-1] in matchup['pick1' + role.role] %}
+                                  <table style="border-collapse: collapse; width: 10%; background-color: #34A853;;"
+                                    border="1">
+                                    {% else %}
+                                    <table style="border-collapse: collapse; width: 10%; background-color: #000000;"
+                                      border="1">
+                                      {% endif %}
 
-                                  <img style="margin: -5px"
-                                    src="/static/img/league/icons/{{game.dragons[i]}}-dragon2.png" width="20"
-                                    height="20" />
+                                      <tbody>
+                                        <tr>
+                                          <td style="width: 100%; text-align: center;">
 
-                                  {% endif %}
-                                  {% endif %}
-                                  {% endfor %}
-                                  {% endif %}
-                                  {% if game.elder %}
-                                  {% for i in range(game.elder) %}
-                                  <img style="margin: -5px" src="/static/img/league/icons/elder-dragon2.png" width="20"
-                                    height="20" />
-                                  {% endfor %}
-                                  {% endif %}
-                                </td>
-                                <td style="text-align: center;">
+                                            <img title="{{champions[game.champion-1].name}}"
+                                              src="/static/img/league/champs/{{ champions[game.champion-1].name }}.png"
+                                              width="50" height="50" />
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    {% else %}
+                                    <table style="border-collapse: collapse; width: 10%; background-color: #000000;"
+                                      border="1">
+                                      <tbody>
+                                        <tr>
+                                          <td style="width: 100%; text-align: center;">
+                                            <img title="None" src="/static/img/league/champs/empty.png" width="50"
+                                              height="50" />
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    {% endif %}
 
-                                  &nbsp;
-                                  {% if game.barons %}
-                                  {% for j in range(game.barons) %}
-                                  {% if game.firstBaron and j == 0 %}
-                                  <img style="margin: -5px" src="/static/img/league/icons/nashor-icon-first.png"
-                                    width="20" height="20" />
-                                  {% else %}
-                                  <img style="margin: -5px" src="/static/img/league/icons/nashor-icon.png" width="20"
-                                    height="20" />
-                                  {% endif %}
-                                  {% endfor %}
-                                  {% endif %}
-                                  &nbsp;
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  {% endfor %}
-                </td>
-                <td style="width: 10%; text-align: center">
-                  <span style="color: #000000">{{'%0.2f'| format(matchup['total1' + role.role]) }}</span>
-                  <span style="color: #888888">{{'%0.2f'| format(matchup['base1' + role.role]) }}</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          {% endfor %}
-          {% endfor %}
-          {% endfor %}
+                            </td>
+                            <td style="width: 90%;">
+                              <table style="border-collapse: collapse; width: 100%;" border="0">
+                                <tbody>
+                                  <tr>
+                                    <td style="text-align: center; width: 70%">
+                                      {% if game.kills is not none %}
+                                      {{ game.kills }}/{{ game.deaths }}/{{ game.assists }}
+                                      <img src="/static/img/league/icons/Minion_icon.webp" width="10" height="10" />
+                                      <span style="color: #000000">{{ game.cs }}</span>
+                                      /
+                                      <span style="color: #888888">{{ game.cs15 }}</span>
+                                      {% else %}
+                                      {{game.date}}
+                                      {% endif %}
+                                    </td>
+                                    <td style="text-align: center; width: 30%">
+                                      &nbsp;
+
+                                      {% if game.firstTower == 1 %}
+                                      <img style="margin: -10px" src="/static/img/league/icons/tower-icon-first.png"
+                                        width="20" height="20" />
+                                      <img style="margin: -10px" src="/static/img/league/icons/tower-icon-first.png"
+                                        width="20" height="20" />
+                                      <img style="margin: -10px" src="/static/img/league/icons/tower-icon-first.png"
+                                        width="20" height="20" />
+                                      {% elif game.firstTower == 0 %}
+                                      <img style="margin: -10px" src="/static/img/league/icons/tower-icon.png"
+                                        width="20" height="20" />
+                                      <img style="margin: -10px" src="/static/img/league/icons/tower-icon.png"
+                                        width="20" height="20" />
+                                      <img style="margin: -10px" src="/static/img/league/icons/tower-icon.png"
+                                        width="20" height="20" />
+                                      {% endif %}
+
+                                      {% if game.firstTower is not none %}
+                                      &nbsp; x {{ game.towers }}
+                                      {% endif %}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td style="text-align: center;">
+                                      {% if game.dragons %}
+                                      {% for i in range(game.dragons|length) %}
+                                      {% if game.dragons[i] != 'e' %}
+                                      {% if game.firstDragon and i == 0 %}
+                                      <img style="margin: -5px"
+                                        src="/static/img/league/icons/{{game.dragons[i]}}-dragon2-first.png" width="20"
+                                        height="20" />
+                                      {% else %}
+
+                                      <img style="margin: -5px"
+                                        src="/static/img/league/icons/{{game.dragons[i]}}-dragon2.png" width="20"
+                                        height="20" />
+
+                                      {% endif %}
+                                      {% endif %}
+                                      {% endfor %}
+                                      {% endif %}
+                                      {% if game.elder %}
+                                      {% for i in range(game.elder) %}
+                                      <img style="margin: -5px" src="/static/img/league/icons/elder-dragon2.png"
+                                        width="20" height="20" />
+                                      {% endfor %}
+                                      {% endif %}
+                                    </td>
+                                    <td style="text-align: center;">
+
+                                      &nbsp;
+                                      {% if game.barons %}
+                                      {% for j in range(game.barons) %}
+                                      {% if game.firstBaron and j == 0 %}
+                                      <img style="margin: -5px" src="/static/img/league/icons/nashor-icon-first.png"
+                                        width="20" height="20" />
+                                      {% else %}
+                                      <img style="margin: -5px" src="/static/img/league/icons/nashor-icon.png"
+                                        width="20" height="20" />
+                                      {% endif %}
+                                      {% endfor %}
+                                      {% endif %}
+                                      &nbsp;
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      {% endfor %}
+                    </td>
+                    <td style="width: 10%; text-align: center">
+                      <span style="color: #000000">{{'%0.2f'| format(matchup['total1' + role.role]) }}</span>
+                      <span style="color: #888888">{{'%0.2f'| format(matchup['base1' + role.role]) }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              {% endfor %}
+              {% endfor %}
+              {% endfor %}
 
         </td>
         <td style="width:50%">
-
+          {{team2.name}}
           {% set roles_list = ['top', 'jungle', 'mid', 'bottom', 'support'] %}
           {% for this_role in roles_list %}
           {% for role in team2.roles|selectattr("role", "equalto", this_role) %}
           {% for player in role.players|selectattr("default", "equalto", true) %}
-          <table style="border-collapse: collapse; width: 100%; background-color: #EEEEEE" border="0">
-            <tbody>
-              <tr>
-                <td style="width: 10%; text-align: center">
-                  <span style="color: #000000">{{'%0.2f'| format(matchup['total2' + role.role]) }}</span>
-                  <span style="color: #888888">{{'%0.2f'| format(matchup['base2' + role.role]) }}</span>
-                </td>
+          {% if team2.owner == user.id %}
+          <table style=" border-collapse: collapse; width: 100%; background-color: #EEFFEE" border="0">
+            {% elif team1.owner == user.id %}
+            <table style=" border-collapse: collapse; width: 100%; background-color: #FFEEEE" border="0">
+              {% else %}
+              <table style=" border-collapse: collapse; width: 100%; background-color: #EEEEEE" border="0">
+                {% endif %}
+                <tbody>
+                  <tr>
+                    <td style="width: 10%; text-align: center">
+                      <span style="color: #000000">{{'%0.2f'| format(matchup['total2' + role.role]) }}</span>
+                      <span style="color: #888888">{{'%0.2f'| format(matchup['base2' + role.role]) }}</span>
+                    </td>
 
 
-                <td style="text-align: center; width: 70%;">
+                    <td style="text-align: center; width: 70%;">
 
-                  {% for game in role.games|selectattr("round", "equalto", round.number) %}
-                  <table style="border-collapse: collapse; width: 100%; background-color: #AAAAEA; margin: 0px"
-                    border="0">
+                      {% for game in role.games|selectattr("round", "equalto", round.number) %}
+                      <table style="border-collapse: collapse; width: 100%; background-color: #AAAAEA; margin: 0px"
+                        border="0">
 
-                    <tbody>
-                      <tr>
-                        <td style="text-align: left; width: 90%;">
-                          <table style="border-collapse: collapse; width: 100%;" border="0">
-                            <tbody>
-                              <tr>
-                                <td style="text-align: center; width: 30%">
-                                  &nbsp;
+                        <tbody>
+                          <tr>
+                            <td style="text-align: left; width: 90%;">
+                              <table style="border-collapse: collapse; width: 100%;" border="0">
+                                <tbody>
+                                  <tr>
+                                    <td style="text-align: center; width: 30%">
+                                      &nbsp;
 
-                                  {% if game.firstTower == 1 %}
-                                  <img style="margin: -10px" src="/static/img/league/icons/tower-icon-first.png"
-                                    width="20" height="20" />
-                                  <img style="margin: -10px" src="/static/img/league/icons/tower-icon-first.png"
-                                    width="20" height="20" />
-                                  <img style="margin: -10px" src="/static/img/league/icons/tower-icon-first.png"
-                                    width="20" height="20" />
-                                  {% elif game.firstTower == 0 %}
-                                  <img style="margin: -10px" src="/static/img/league/icons/tower-icon.png" width="20"
-                                    height="20" />
-                                  <img style="margin: -10px" src="/static/img/league/icons/tower-icon.png" width="20"
-                                    height="20" />
-                                  <img style="margin: -10px" src="/static/img/league/icons/tower-icon.png" width="20"
-                                    height="20" />
-                                  {% endif %}
+                                      {% if game.firstTower == 1 %}
+                                      <img style="margin: -10px" src="/static/img/league/icons/tower-icon-first.png"
+                                        width="20" height="20" />
+                                      <img style="margin: -10px" src="/static/img/league/icons/tower-icon-first.png"
+                                        width="20" height="20" />
+                                      <img style="margin: -10px" src="/static/img/league/icons/tower-icon-first.png"
+                                        width="20" height="20" />
+                                      {% elif game.firstTower == 0 %}
+                                      <img style="margin: -10px" src="/static/img/league/icons/tower-icon.png"
+                                        width="20" height="20" />
+                                      <img style="margin: -10px" src="/static/img/league/icons/tower-icon.png"
+                                        width="20" height="20" />
+                                      <img style="margin: -10px" src="/static/img/league/icons/tower-icon.png"
+                                        width="20" height="20" />
+                                      {% endif %}
+                                      {% if game.firstTower is not none %}
+                                      &nbsp; x {{ game.towers }}
+                                      {% endif %}
+                                    </td>
+                                    <td style="text-align: center; width: 70%">
+                                      {% if game.kills is not none %}
+                                      {{ game.kills }}/{{ game.deaths }}/{{ game.assists }}
 
-                                  &nbsp; x {{ game.towers }}
-                                </td>
-                                <td style="text-align: center; width: 70%">
-                                  {% if game.kills is not none %}
-                                  {{ game.kills }}/{{ game.deaths }}/{{ game.assists }}
+                                      <img src="/static/img/league/icons/Minion_icon.webp" width="10" height="10" />
+                                      <span style="color: #000000">{{ game.cs }}</span>
+                                      /
+                                      <span style="color: #888888">{{ game.cs15 }}</span>
+                                      {% else %}
+                                      {{game.date}}
+                                      {% endif %}
+                                    </td>
 
-                                  <img src="/static/img/league/icons/Minion_icon.webp" width="10" height="10" />
-                                  <span style="color: #000000">{{ game.cs }}</span>
-                                  /
-                                  <span style="color: #888888">{{ game.cs15 }}</span>
-                                  {% endif %}
-                                </td>
+                                  </tr>
+                                  <tr>
+                                    <td style="text-align: center;">
 
-                              </tr>
-                              <tr>
-                                <td style="text-align: center;">
+                                      &nbsp;
+                                      {% if game.barons %}
+                                      {% for j in range(game.barons) %}
+                                      {% if game.firstBaron and j == 0 %}
+                                      <img style="margin: -5px" src="/static/img/league/icons/nashor-icon-first.png"
+                                        width="20" height="20" />
+                                      {% else %}
+                                      <img style="margin: -5px" src="/static/img/league/icons/nashor-icon.png"
+                                        width="20" height="20" />
+                                      {% endif %}
+                                      {% endfor %}
+                                      {% endif %}
+                                      &nbsp;
+                                    </td>
+                                    <td style="text-align: center;">
+                                      {% if game.dragons %}
+                                      {% for i in range(game.dragons|length) %}
+                                      {% if game.dragons[i] != 'e' %}
+                                      {% if game.firstDragon and i == 0 %}
+                                      <img style="margin: -5px"
+                                        src="/static/img/league/icons/{{game.dragons[i]}}-dragon2-first.png" width="20"
+                                        height="20" />
+                                      {% else %}
+                                      <img style="margin: -5px"
+                                        src="/static/img/league/icons/{{game.dragons[i]}}-dragon2.png" width="20"
+                                        height="20" />
+                                      {% endif %}
+                                      {% endif %}
+                                      {% endfor %}
+                                      {% endif %}
+                                      {% if game.elder %}
+                                      {% for i in range(game.elder) %}
+                                      <img style="margin: -5px" src="/static/img/league/icons/elder-dragon2.png"
+                                        width="20" height="20" />
+                                      {% endfor %}
+                                      {% endif %}
 
-                                  &nbsp;
-                                  {% if game.barons %}
-                                  {% for j in range(game.barons) %}
-                                  {% if game.firstBaron and j == 0 %}
-                                  <img style="margin: -5px" src="/static/img/league/icons/nashor-icon-first.png"
-                                    width="20" height="20" />
-                                  {% else %}
-                                  <img style="margin: -5px" src="/static/img/league/icons/nashor-icon.png" width="20"
-                                    height="20" />
-                                  {% endif %}
-                                  {% endfor %}
-                                  {% endif %}
-                                  &nbsp;
-                                </td>
-                                <td style="text-align: center;">
-                                  {% if game.dragons %}
-                                  {% for i in range(game.dragons|length) %}
-                                  {% if game.dragons[i] != 'e' %}
-                                  {% if game.firstDragon and i == 0 %}
-                                  <img style="margin: -5px"
-                                    src="/static/img/league/icons/{{game.dragons[i]}}-dragon2-first.png" width="20"
-                                    height="20" />
-                                  {% else %}
-                                  <img style="margin: -5px"
-                                    src="/static/img/league/icons/{{game.dragons[i]}}-dragon2.png" width="20"
-                                    height="20" />
-                                  {% endif %}
-                                  {% endif %}
-                                  {% endfor %}
-                                  {% endif %}
-                                  {% if game.elder %}
-                                  {% for i in range(game.elder) %}
-                                  <img style="margin: -5px" src="/static/img/league/icons/elder-dragon2.png" width="20"
-                                    height="20" />
-                                  {% endfor %}
-                                  {% endif %}
-
-                                </td>
+                                    </td>
 
 
-                              </tr>
-                            </tbody>
-                          </table>
-                        </td>
-                        <td style="width: 1%;">
-                          {% if game.champion %}
-                          {% if champions[game.champion-1] in matchup['ban2' + role.role] %}
-                          {% if champions[game.champion-1] in matchup['pick2' + role.role] %}
-                          <table style="border-collapse: collapse; width: 10%; background-color: #fbbc04;" border="1">
-                            {% else %}
-                            <table style="border-collapse: collapse; width: 10%; background-color: #EA4335;" border="1">
-                              {% endif %}
-                              {% elif champions[game.champion-1] in matchup['pick2' + role.role] %}
-                              <table style="border-collapse: collapse; width: 10%; background-color: #34A853;;"
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                            <td style="width: 1%;">
+                              {% if game.champion %}
+                              {% if champions[game.champion-1] in matchup['ban2' + role.role] %}
+                              {% if champions[game.champion-1] in matchup['pick2' + role.role] %}
+                              <table style="border-collapse: collapse; width: 10%; background-color: #fbbc04;"
                                 border="1">
                                 {% else %}
-                                <table style="border-collapse: collapse; width: 10%; background-color: #000000;"
+                                <table style="border-collapse: collapse; width: 10%; background-color: #EA4335;"
                                   border="1">
                                   {% endif %}
-                                  <tbody>
-                                    <tr>
-                                      <td style="width: 100%; text-align: center;">
-
-                                        <img title="{{champions[game.champion-1].name}}"
-                                          src="/static/img/league/champs/{{ champions[game.champion-1].name }}.png"
-                                          width="50" height="50" />
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                                {% else %}
-                                <table style="border-collapse: collapse; width: 10%; background-color: #000000;"
-                                  border="1">
-                                  <tbody>
-                                    <tr>
-                                      <td style="width: 100%; text-align: center;">
-                                        <img title="None" src="/static/img/league/champs/empty.png" width="50"
-                                          height="50" />
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                                {% endif %}
-
-                        </td>
-
-                      </tr>
-                    </tbody>
-                  </table>
-                  {% endfor %}
-                </td>
-                <td style="width: 10%;">
-                  <table style="border-collapse: collapse; width: 100%;" border="0">
-                    <tbody>
-                      <tr>
-
-                        {% if user.id == team2.owner or picks_locked%}
-                        <td style="width: 10%;">
-                          {% if picks_locked %}
-                          {% if matchup['pick2' + role.role] %}
-                          {% for champ in matchup['pick2' + role.role] %}
-                          <table style="border-collapse: collapse; width: 10%; background-color: #34A853;" border="1">
-                            <tbody>
-                              <tr>
-                                <td style="width: 10%; text-align: center;">
-                                  <img src="/static/img/league/champs/{{ champ.name }}.png" width="30" height="30" />
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          {% endfor %}
-                          {% else %}
-                          <table style="border-collapse: collapse; width: 10%; background-color: #34A853;" border="1">
-                            <tbody>
-                              <tr>
-                                <td style="width: 10%; text-align: center;">
-                                  <img src="/static/img/league/champs/empty.png" width="30" height="30" />
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          {% endif %}
-                          {% else %}
-                          {% if matchup['pick2' + role.role] %}
-                          <table style="border-collapse: collapse; width: 10%;  background-color: #34A853;" border="1">
-                            <tbody>
-                              <tr>
-                                <td style="width: 10%; text-align: center;">
-                                  <select id={{"id_team2_" + role.role + "_pick1" }} name={{"pick2" + role.role}}
-                                    align="center" style="width:60px;height:60px;padding:15px"
-                                    searchable="Search here..">
-                                    <div style="margin:-15px">
-                                      {% for champ in matchup['pick2' + role.role] %}
-                                      <option data-img_src="/static/img/league/champs/{{champ.name}}.png" value="none">
-                                        {{champ.name}}
-                                      </option>
-                                      {% endfor %}
-                                    </div>
-                                    {% for champ in champions|sort(attribute="name") %}
-                                    <div style="margin:-15px">
-                                      {% if champ not in matchup['pick2' + role.role] %}
-                                      <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
-                                        value="{{ champ.name }}">{{ champ.name }}</option>
+                                  {% elif champions[game.champion-1] in matchup['pick2' + role.role] %}
+                                  <table style="border-collapse: collapse; width: 10%; background-color: #34A853;;"
+                                    border="1">
+                                    {% else %}
+                                    <table style="border-collapse: collapse; width: 10%; background-color: #000000;"
+                                      border="1">
                                       {% endif %}
-                                    </div>
-                                    {% endfor %}
-                                  </select>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          {% else %}
-                          <table style="border-collapse: collapse; width: 10%;  background-color: #34A853;" border="1">
-                            <tbody>
-                              <tr>
-                                <td style="width: 10%; text-align: center;">
-                                  <select id={{"id_team2_" + role.role + "_pick1" }} name={{"pick2" + role.role}}
-                                    align="center" style="width:60px;height:60px;padding:0px"
-                                    searchable="Search here..">
-                                    <div style="margin:-15px">
-                                      <option data-img_src="/static/img/league/champs/empty.png" value="none">none
-                                      </option>
-                                    </div>
-                                    {% for champ in champions|sort(attribute="name") %}
-                                    <div style="margin:-15px">
-                                      <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
-                                        value="{{ champ.name }}">{{ champ.name }}</option>
-                                    </div>
-                                    {% endfor %}
-                                  </select>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          {% endif %}
+                                      <tbody>
+                                        <tr>
+                                          <td style="width: 100%; text-align: center;">
 
-                          {% endif %}
-                        </td>
-                        {% endif %}
-                        {% if user.id == team1.owner or picks_locked %}
-                        <td style="width: 10%;">
-                          {% if picks_locked %}
-                          {% if matchup['ban2'+role.role] %}
-                          {% for champ in matchup['ban2' + role.role] %}
-                          <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;" border="1">
-                            <tbody>
-                              <tr>
-                                <td style="width: 10%; text-align: center;">
-                                  <img src="/static/img/league/champs/{{ champ.name }}.png" width="30" height="30" />
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          {% endfor %}
-                          {% else %}
-                          <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;" border="1">
-                            <tbody>
-                              <tr>
-                                <td style="width: 10%; text-align: center;">
-                                  <img src="/static/img/league/champs/empty.png" width="30" height="30" />
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          {% endif %}
-                          {% else %}
-                          {% if matchup['ban2' + role.role] %}
-                          <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;" border="1">
-                            <tbody>
-                              <tr>
-                                <td style="width: 10%; text-align: center;">
-                                  <select id={{"id_team2_" + role.role + "_ban1" }} name={{"ban2" + role.role }}
-                                    align="center" style="width:60px;height:60px;padding:1px"
-                                    searchable="Search here..">
-                                    <div style="margin:-15px">
-                                      {% for champ in matchup['ban2' + role.role] %}
-                                      <option data-img_src="/static/img/league/champs/{{champ.name}}.png" value="none">
-                                        {{champ.name}}
-                                      </option>
-                                      {% endfor %}
-                                    </div>
-                                    {% for champ in champions|sort(attribute="name") %}
-                                    <div style="margin:-15px">
-                                      {% if champ not in matchup['ban2' + role.role] %}
-                                      <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
-                                        value="{{ champ.name }}">{{ champ.name }}</option>
-                                      {% endif %}
-                                    </div>
-                                    {% endfor %}
-                                  </select>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          {% else %}
-                          <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;" border="1">
-                            <tbody>
-                              <tr>
-                                <td style="width: 10%; text-align: center;">
-                                  <select id={{"id_team2_" + role.role + "_ban1" }} name={{"ban2" + role.role}}
-                                    align="center" style="width:60px;height:60px;padding:1px"
-                                    searchable="Search here..">
-                                    <div style="margin:-15px">
-                                      <option data-img_src="/static/img/league/champs/empty.png" value="none">none
-                                      </option>
-                                    </div>
-                                    {% for champ in champions|sort(attribute="name") %}
-                                    <div style="margin:-15px">
-                                      <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
-                                        value="{{ champ.name }}">{{ champ.name }}</option>
-                                    </div>
-                                    {% endfor %}
-                                  </select>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          {% endif %}
-                          {% endif %}
-                        </td>
-                        {% endif %}
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-                <td style="width: 100px; height: 43px;">
-                  <table style="border-collapse: collapse; width: 100%;" border="0">
-                    <tbody>
-                      <tr>
-                        <td style="width: 100%; text-align: center;">{{tournament.teams[player.team-1].code}}
-                          <br />
-                          {{ player.name }}
+                                            <img title="{{champions[game.champion-1].name}}"
+                                              src="/static/img/league/champs/{{ champions[game.champion-1].name }}.png"
+                                              width="50" height="50" />
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    {% else %}
+                                    <table style="border-collapse: collapse; width: 10%; background-color: #000000;"
+                                      border="1">
+                                      <tbody>
+                                        <tr>
+                                          <td style="width: 100%; text-align: center;">
+                                            <img title="None" src="/static/img/league/champs/empty.png" width="50"
+                                              height="50" />
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    {% endif %}
 
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="width: 110px; text-align: center;">
-                          <div class="containerdiv">
-                            <img style="margin:0px 0px" src="/static/img/league/icons/{{ role.role }}_icon.webp"
-                              width="100" height="100" />
-                            <img class="cornerimage"
-                              src="/static/img/league/players/{{tournament.teams[player.team-1].code}}/{{ player.name }}.png"
-                              width="100" height="100" />
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          {% endfor %}
-          {% endfor %}
-          {% endfor %}
+                            </td>
+
+                          </tr>
+                        </tbody>
+                      </table>
+                      {% endfor %}
+                    </td>
+                    <td style="width: 10%;">
+                      <table style="border-collapse: collapse; width: 100%;" border="0">
+                        <tbody>
+                          <tr>
+
+                            {% if user.id == team2.owner or picks_locked%}
+                            <td style="width: 10%;">
+                              {% if picks_locked %}
+                              {% if matchup['pick2' + role.role] %}
+                              {% for champ in matchup['pick2' + role.role] %}
+                              <table style="border-collapse: collapse; width: 10%; background-color: #34A853;"
+                                border="1">
+                                <tbody>
+                                  <tr>
+                                    <td style="width: 10%; text-align: center;">
+                                      <img src="/static/img/league/champs/{{ champ.name }}.png" width="30"
+                                        height="30" />
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              {% endfor %}
+                              {% else %}
+                              <table style="border-collapse: collapse; width: 10%; background-color: #34A853;"
+                                border="1">
+                                <tbody>
+                                  <tr>
+                                    <td style="width: 10%; text-align: center;">
+                                      <img src="/static/img/league/champs/empty.png" width="30" height="30" />
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              {% endif %}
+                              {% else %}
+                              {% if matchup['pick2' + role.role] %}
+                              <table style="border-collapse: collapse; width: 10%;  background-color: #34A853;"
+                                border="1">
+                                <tbody>
+                                  <tr>
+                                    <td style="width: 10%; text-align: center;">
+                                      <select id={{"id_team2_" + role.role + "_pick1" }} name={{"pick2" + role.role}}
+                                        align="center" style="width:60px;height:60px;padding:15px"
+                                        searchable="Search here..">
+                                        <div style="margin:-15px">
+                                          {% for champ in matchup['pick2' + role.role] %}
+                                          <option data-img_src="/static/img/league/champs/{{champ.name}}.png"
+                                            value="none">
+                                            {{champ.name}}
+                                          </option>
+                                          {% endfor %}
+                                        </div>
+                                        {% for champ in champions|sort(attribute="name") %}
+                                        <div style="margin:-15px">
+                                          {% if champ not in matchup['pick2' + role.role] %}
+                                          <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
+                                            value="{{ champ.name }}">{{ champ.name }}</option>
+                                          {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                      </select>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              {% else %}
+                              <table style="border-collapse: collapse; width: 10%;  background-color: #34A853;"
+                                border="1">
+                                <tbody>
+                                  <tr>
+                                    <td style="width: 10%; text-align: center;">
+                                      <select id={{"id_team2_" + role.role + "_pick1" }} name={{"pick2" + role.role}}
+                                        align="center" style="width:60px;height:60px;padding:0px"
+                                        searchable="Search here..">
+                                        <div style="margin:-15px">
+                                          <option data-img_src="/static/img/league/champs/empty.png" value="none">none
+                                          </option>
+                                        </div>
+                                        {% for champ in champions|sort(attribute="name") %}
+                                        <div style="margin:-15px">
+                                          <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
+                                            value="{{ champ.name }}">{{ champ.name }}</option>
+                                        </div>
+                                        {% endfor %}
+                                      </select>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              {% endif %}
+
+                              {% endif %}
+                            </td>
+                            {% endif %}
+                            {% if user.id == team1.owner or picks_locked %}
+                            <td style="width: 10%;">
+                              {% if picks_locked %}
+                              {% if matchup['ban2'+role.role] %}
+                              {% for champ in matchup['ban2' + role.role] %}
+                              <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;"
+                                border="1">
+                                <tbody>
+                                  <tr>
+                                    <td style="width: 10%; text-align: center;">
+                                      <img src="/static/img/league/champs/{{ champ.name }}.png" width="30"
+                                        height="30" />
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              {% endfor %}
+                              {% else %}
+                              <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;"
+                                border="1">
+                                <tbody>
+                                  <tr>
+                                    <td style="width: 10%; text-align: center;">
+                                      <img src="/static/img/league/champs/empty.png" width="30" height="30" />
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              {% endif %}
+                              {% else %}
+                              {% if matchup['ban2' + role.role] %}
+                              <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;"
+                                border="1">
+                                <tbody>
+                                  <tr>
+                                    <td style="width: 10%; text-align: center;">
+                                      <select id={{"id_team2_" + role.role + "_ban1" }} name={{"ban2" + role.role }}
+                                        align="center" style="width:60px;height:60px;padding:1px"
+                                        searchable="Search here..">
+                                        <div style="margin:-15px">
+                                          {% for champ in matchup['ban2' + role.role] %}
+                                          <option data-img_src="/static/img/league/champs/{{champ.name}}.png"
+                                            value="none">
+                                            {{champ.name}}
+                                          </option>
+                                          {% endfor %}
+                                        </div>
+                                        {% for champ in champions|sort(attribute="name") %}
+                                        <div style="margin:-15px">
+                                          {% if champ not in matchup['ban2' + role.role] %}
+                                          <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
+                                            value="{{ champ.name }}">{{ champ.name }}</option>
+                                          {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                      </select>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              {% else %}
+                              <table style="border-collapse: collapse; width: 10%;  background-color: #EA4335;"
+                                border="1">
+                                <tbody>
+                                  <tr>
+                                    <td style="width: 10%; text-align: center;">
+                                      <select id={{"id_team2_" + role.role + "_ban1" }} name={{"ban2" + role.role}}
+                                        align="center" style="width:60px;height:60px;padding:1px"
+                                        searchable="Search here..">
+                                        <div style="margin:-15px">
+                                          <option data-img_src="/static/img/league/champs/empty.png" value="none">none
+                                          </option>
+                                        </div>
+                                        {% for champ in champions|sort(attribute="name") %}
+                                        <div style="margin:-15px">
+                                          <option data-img_src="/static/img/league/champs/{{ champ.name }}.png"
+                                            value="{{ champ.name }}">{{ champ.name }}</option>
+                                        </div>
+                                        {% endfor %}
+                                      </select>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              {% endif %}
+                              {% endif %}
+                            </td>
+                            {% endif %}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                    <td style="width: 100px; height: 43px;">
+                      {% for team in tournament.teams|selectattr("id", "equalto", player.team) %}
+                      <table style="border-collapse: collapse; width: 100%;" border="0">
+                        <tbody>
+                          <tr>
+                            <td style="width: 100%; text-align: center;">{{team.code}}
+                              <br />
+                              {{ player.name }}
+
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="width: 110px; text-align: center;">
+                              <div class="containerdiv">
+                                <img style="margin:0px 0px" src="/static/img/league/icons/{{ role.role }}_icon.webp"
+                                  width="100" height="100" />
+                                <img class="cornerimage"
+                                  src="/static/img/league/players/{{team.code}}/{{ player.name }}.png" width="100"
+                                  height="100" />
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      {% endfor %}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              {% endfor %}
+              {% endfor %}
+              {% endfor %}
 
         </td>
       </tr>
@@ -768,4 +819,37 @@ Time until picks locked: {{first_match - now}}
   <button type="submit" class="btn btn-primary">Save picks/bans</button>
 </form>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Set the date we're counting down to
+  var countDownDate = new Date({{ first_match }});
+
+  // Update the count down every 1 second
+  var x = setInterval(function () {
+
+    // Get today's date and time
+    var now = new Date().getTime();
+
+    // Find the distance between now and the count down date
+    var distance = countDownDate - now;
+
+    // Time calculations for days, hours, minutes and seconds
+    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    // Display the result in the element with id="demo"
+    document.getElementById("demo").innerHTML = days + "d " + hours + "h "
+      + minutes + "m " + seconds + "s ";
+
+    // If the count down is finished, write some text
+    if (distance < 0) {
+      clearInterval(x);
+      document.getElementById("demo").innerHTML = "EXPIRED";
+    }
+  }, 1000);
+</script>
 {% endblock %}
