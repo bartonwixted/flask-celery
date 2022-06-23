@@ -110,6 +110,29 @@ Manual entry for players
 <h1 align="center">Existing Tournaments</h1>
 
 {% for tourney in tournaments %}
+Move players
+<form method="POST">
+    <select id="player" name="player" searchable>
+        {% for team in tourney.teams %}
+        {% for role in team.roles %}
+        {% for player in role.players %}
+        <option value="{{player.id}}">{{player.name +' ' + team.code}}</option>
+        {% endfor %}
+        {% endfor %}
+        {% endfor %}
+    </select>
+
+    <select id="role" name="role">
+        <option value="" disabled selected>Choose a role</option>
+        <option value="top">Top</option>
+        <option value="jungle">Jungle</option>
+        <option value="mid">Middle</option>
+        <option value="bottom">Bottom</option>
+        <option value="support">Support</option>
+        <option value="none">Fill</option>
+    </select>
+    <button type="submit" name="action" value='movePlayer' class="btn btn-primary">Set Default Players</button>
+</form>
 <form method="POST">
     <div style="text-align: center; padding-top: 10px;">
         <table style="border-collapse: collapse; width: 100%;" border="1">
@@ -143,6 +166,7 @@ Manual entry for players
                                     <td style="width: 16.6667%;">Mid</td>
                                     <td style="width: 16.6667%;">Bot</td>
                                     <td style="width: 16.6667%;">Sup</td>
+                                    <td style="width: 16.6667%;">Fill</td>
                                 </tr>
                                 {% for team in tourney.teams %}
                                 <tr>
@@ -199,6 +223,18 @@ Manual entry for players
                                         {% for role in team.roles|selectattr("role", "equalto", 'support') %}
                                         {% for player in role.players %}
                                         <input type="radio" id="html" name="{{ team.code }} support"
+                                            value="{{ player.id }}" {% if player.default %} checked {% endif %}>
+                                        {{ player.name }}
+                                        <br />
+                                        <img src="/static/img/league/players/{{ team.code }}/{{ player.name }}.png"
+                                            width="50" height="50" /> <br />
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </td>
+                                    <td style="width: 16.6667%;">
+                                        {% for role in team.roles|selectattr("role", "equalto", 'none') %}
+                                        {% for player in role.players %}
+                                        <input type="radio" id="html" name="{{ team.code }} none"
                                             value="{{ player.id }}" {% if player.default %} checked {% endif %}>
                                         {{ player.name }}
                                         <br />

@@ -7,11 +7,12 @@ from .models import User, Gamestats, Fantasyleague, Fantasyteam, Tournament, Pla
 from project.server import db
 from flask_login import login_user, login_required, logout_user, current_user
 from datetime import datetime, timedelta
-from project.server.tasks import create_task, background_scrape
+from project.server.tasks import create_task, background_scrape, test
 from project.server.main.lolesports_api import Lolesports_API
 from project.server.main.lolscrape import pull_league_teams, pull_league_tournaments, pull_team_players, pull_leagues, pull_league_schedule, pull_game_data
 import os
 import requests
+import random
 
 main_blueprint = Blueprint("main", __name__,)
 
@@ -75,6 +76,17 @@ def sign_up():
     return render_template("sign-up.html", user=current_user)
 
 
+@main_blueprint.route("/tasks/<task_id>", methods=["GET"])
+def get_status(task_id):
+    task_result = AsyncResult(task_id)
+    result = {
+        "task_id": task_id,
+        "task_status": task_result.status,
+        "task_result": task_result.result
+    }
+    return jsonify(result), 200
+
+
 @main_blueprint.route("/myleagues", methods=['GET', 'POST'])
 @login_required
 def myleagues():
@@ -96,7 +108,7 @@ def myleagues():
         league = request.form.get("league")
 
         # we should probably just get the most recent season tbh
-        now = '2022-06-15' #str(datetime.today().date())
+        now = '2022-06-15'  # str(datetime.today().date())
 
         # check to see what tournaments are available
         allTournaments = api.get_tournaments_for_league(league_id=league)
@@ -169,7 +181,8 @@ def myleagues():
                     thisteam = Team.query.filter_by(
                         esportsId=team['esportsId'], tournament=exists.id).first()
 
-                    roles = ['top', 'jungle', 'mid', 'bottom', 'support']
+                    roles = ['top', 'jungle', 'mid',
+                             'bottom', 'support', 'none']
 
                     for role in roles:
                         new_role = Role(team=thisteam.id, role=role)
@@ -205,11 +218,14 @@ def myleagues():
         now=str(datetime.today()),
         leagues=allLeagues,
         tournaments=allTournaments,
-        teams = allTeams)
+        teams=allTeams)
 
 
-@main_blueprint.route("/", methods=["GET"])
+@main_blueprint.route("/", methods=["GET", 'POST'])
 def home():
+
+    if(request.method == 'POST'):
+        print(request.form.get())
     champs = Champion.query.all()
     return render_template("home.html", user=current_user, champs=champs)
 
@@ -219,11 +235,21 @@ def home():
 def matchup():
     leagueid = request.args.get('leagueid')
     matchupid = request.args.get('m')
+    robot = User.query.filter_by(email="bot@bot").first()
+    fantasy = Fantasyleague.query.filter_by(id=leagueid).first()
+    matchup = Matchup.query.filter_by(id=matchupid).first()
+    round = Round.query.filter_by(id=matchup.round).first()
+    team1 = Fantasyteam.query.filter_by(id=matchup.team1).first()
+    team2 = Fantasyteam.query.filter_by(id=matchup.team2).first()
+    tournament = Tournament.query.filter_by(id=fantasy.tournament).first()
+    champions = Champion.query.all()
+    now = datetime.today()
+
     if(request.method == 'POST'):
         print(request.form)
-        matchup = Matchup.query.filter_by(id=matchupid).first()
         if request.form.get('pick1top') and (request.form.get('pick1top') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('pick1top')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('pick1top')).first()
             print(champ.name)
             if not matchup.pick1top:
                 matchup.pick1top.append(champ)
@@ -236,7 +262,8 @@ def matchup():
                 matchup.pick1top.append(champ)
                 db.session.commit()
         if request.form.get('ban1top') and (request.form.get('ban1top') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('ban1top')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('ban1top')).first()
             print(champ.name)
             if not matchup.ban1top:
                 matchup.ban1top.append(champ)
@@ -250,7 +277,8 @@ def matchup():
                 db.session.commit()
 
         if request.form.get('pick1jungle') and (request.form.get('pick1jungle') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('pick1jungle')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('pick1jungle')).first()
             print(champ.name)
             if not matchup.pick1jungle:
                 matchup.pick1jungle.append(champ)
@@ -263,7 +291,8 @@ def matchup():
                 matchup.pick1jungle.append(champ)
                 db.session.commit()
         if request.form.get('ban1jungle') and (request.form.get('ban1jungle') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('ban1jungle')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('ban1jungle')).first()
             print(champ.name)
             if not matchup.ban1jungle:
                 matchup.ban1jungle.append(champ)
@@ -276,7 +305,8 @@ def matchup():
                 matchup.ban1jungle.append(champ)
                 db.session.commit()
         if request.form.get('pick1mid') and (request.form.get('pick1mid') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('pick1mid')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('pick1mid')).first()
             print(champ.name)
             if not matchup.pick1mid:
                 matchup.pick1mid.append(champ)
@@ -289,7 +319,8 @@ def matchup():
                 matchup.pick1mid.append(champ)
                 db.session.commit()
         if request.form.get('ban1mid') and (request.form.get('ban1mid') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('ban1mid')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('ban1mid')).first()
             print(champ.name)
             if not matchup.ban1mid:
                 matchup.ban1mid.append(champ)
@@ -302,7 +333,8 @@ def matchup():
                 matchup.ban1mid.append(champ)
                 db.session.commit()
         if request.form.get('pick1bottom') and (request.form.get('pick1bottom') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('pick1bottom')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('pick1bottom')).first()
             print(champ.name)
             if not matchup.pick1bottom:
                 matchup.pick1bottom.append(champ)
@@ -315,7 +347,8 @@ def matchup():
                 matchup.pick1bottom.append(champ)
                 db.session.commit()
         if request.form.get('ban1bottom') and (request.form.get('ban1bottom') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('ban1bottom')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('ban1bottom')).first()
             print(champ.name)
             if not matchup.ban1bottom:
                 matchup.ban1bottom.append(champ)
@@ -328,7 +361,8 @@ def matchup():
                 matchup.ban1bottom.append(champ)
                 db.session.commit()
         if request.form.get('pick1support') and (request.form.get('pick1support') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('pick1support')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('pick1support')).first()
             print(champ.name)
             if not matchup.pick1support:
                 matchup.pick1support.append(champ)
@@ -341,7 +375,8 @@ def matchup():
                 matchup.pick1support.append(champ)
                 db.session.commit()
         if request.form.get('ban1support') and (request.form.get('ban1support') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('ban1support')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('ban1support')).first()
             print(champ.name)
             if not matchup.ban1support:
                 matchup.ban1support.append(champ)
@@ -354,7 +389,8 @@ def matchup():
                 matchup.ban1support.append(champ)
                 db.session.commit()
         if request.form.get('pick2top') and (request.form.get('pick2top') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('pick2top')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('pick2top')).first()
             print(champ.name)
             if not matchup.pick2top:
                 matchup.pick2top.append(champ)
@@ -367,7 +403,8 @@ def matchup():
                 matchup.pick2top.append(champ)
                 db.session.commit()
         if request.form.get('ban2top') and (request.form.get('ban2top') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('ban2top')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('ban2top')).first()
             print(champ.name)
             if not matchup.ban2top:
                 matchup.ban2top.append(champ)
@@ -381,7 +418,8 @@ def matchup():
                 db.session.commit()
 
         if request.form.get('pick2jungle') and (request.form.get('pick2jungle') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('pick2jungle')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('pick2jungle')).first()
             print(champ.name)
             if not matchup.pick2jungle:
                 matchup.pick2jungle.append(champ)
@@ -394,7 +432,8 @@ def matchup():
                 matchup.pick2jungle.append(champ)
                 db.session.commit()
         if request.form.get('ban2jungle') and (request.form.get('ban2jungle') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('ban2jungle')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('ban2jungle')).first()
             print(champ.name)
             if not matchup.ban2jungle:
                 matchup.ban2jungle.append(champ)
@@ -407,7 +446,8 @@ def matchup():
                 matchup.ban2jungle.append(champ)
                 db.session.commit()
         if request.form.get('pick2mid') and (request.form.get('pick2mid') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('pick2mid')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('pick2mid')).first()
             print(champ.name)
             if not matchup.pick2mid:
                 matchup.pick2mid.append(champ)
@@ -420,7 +460,8 @@ def matchup():
                 matchup.pick2mid.append(champ)
                 db.session.commit()
         if request.form.get('ban2mid') and (request.form.get('ban2mid') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('ban2mid')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('ban2mid')).first()
             print(champ.name)
             if not matchup.ban2mid:
                 matchup.ban2mid.append(champ)
@@ -433,7 +474,8 @@ def matchup():
                 matchup.ban2mid.append(champ)
                 db.session.commit()
         if request.form.get('pick2bottom') and (request.form.get('pick2bottom') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('pick2bottom')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('pick2bottom')).first()
             print(champ.name)
             if not matchup.pick2bottom:
                 matchup.pick2bottom.append(champ)
@@ -446,7 +488,8 @@ def matchup():
                 matchup.pick2bottom.append(champ)
                 db.session.commit()
         if request.form.get('ban2bottom') and (request.form.get('ban2bottom') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('ban2bottom')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('ban2bottom')).first()
             print(champ.name)
             if not matchup.ban2bottom:
                 matchup.ban2bottom.append(champ)
@@ -459,7 +502,8 @@ def matchup():
                 matchup.ban2bottom.append(champ)
                 db.session.commit()
         if request.form.get('pick2support') and (request.form.get('pick2support') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('pick2support')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('pick2support')).first()
             print(champ.name)
             if not matchup.pick2support:
                 matchup.pick2support.append(champ)
@@ -472,7 +516,8 @@ def matchup():
                 matchup.pick2support.append(champ)
                 db.session.commit()
         if request.form.get('ban2support') and (request.form.get('ban2support') != 'none'):
-            champ = Champion.query.filter_by(name = request.form.get('ban2support')).first()
+            champ = Champion.query.filter_by(
+                name=request.form.get('ban2support')).first()
             print(champ.name)
             if not matchup.ban2support:
                 matchup.ban2support.append(champ)
@@ -484,19 +529,13 @@ def matchup():
                 db.session.commit()
                 matchup.ban2support.append(champ)
                 db.session.commit()
-                
 
+        # If the matchup is against the Bot player
+        # Bot Picks are randomly selected from
+        # a list of champs previously played by players in this role
+        # with recent? picks by this player tripled in weight
+        # Bot bans are the same, but for the opposing player.
 
-    
-
-    fantasy = Fantasyleague.query.filter_by(id=leagueid).first()
-    matchup = Matchup.query.filter_by(id=matchupid).first()
-    round = Round.query.filter_by(id=matchup.round).first()
-    team1 = Fantasyteam.query.filter_by(id=matchup.team1).first()
-    team2 = Fantasyteam.query.filter_by(id=matchup.team2).first()
-    tournament = Tournament.query.filter_by(id=fantasy.tournament).first()
-    champions = Champion.query.all()
-    now = datetime.today()
     print(round)
     print(fantasy)
     print(matchup)
@@ -506,13 +545,15 @@ def matchup():
     for role in team1.roles:
         games = Gamestats.query.filter_by(role=role.id, round=round.number)
         for game in games:
+
             times.append(game.date)
             print(game.date)
             print(game.champion)
-            if not game.champion and (game.date + timedelta(hours = 1)) < datetime.today():
+            if not game.champion and (game.date + timedelta(hours=1)) < now:
                 if not game.worker:
                     task = background_scrape.delay(game.gameId)
-                    thisGame = Gamestats.query.filter_by(gameId = game.gameId).all()
+                    thisGame = Gamestats.query.filter_by(
+                        gameId=game.gameId).all()
                     for eachPlayer in thisGame:
                         eachPlayer.worker = task.id
                         db.session.commit()
@@ -569,10 +610,13 @@ def matchup():
                             print(dstats)
                     elif task_progress.status == "FAILURE":
                         task = background_scrape.delay(game.gameId)
-                        thisGame = Gamestats.query.filter_by(gameId = game.gameId).all()
+                        thisGame = Gamestats.query.filter_by(
+                            gameId=game.gameId).all()
                         for eachPlayer in thisGame:
                             eachPlayer.worker = task.id
                             db.session.commit()
+                    elif task_progress.status == "LOOKATME":
+                        print("ASASFASDFASDFADFASDF")
         bp = 0
         tp = 0
         for game in games:
@@ -599,7 +643,7 @@ def matchup():
                     if matchup.pick1top:
                         if matchup.pick1top[0].id == game.champion:
                             if matchup.ban1top == matchup.pick1top:
-                                #do nothing
+                                # do nothing
                                 tp = tp + gp
                             else:
                                 tp = tp + fantasy.pickmul*gp
@@ -622,10 +666,9 @@ def matchup():
 
                 elif role.role == 'jungle':
                     if matchup.pick1jungle:
-                        print(matchup.pick1jungle[0].id, game.champion)
                         if matchup.pick1jungle[0].id == game.champion:
                             if matchup.ban1jungle == matchup.pick1jungle:
-                                #do nothing
+                                # do nothing
                                 tp = tp + gp
                             else:
                                 tp = tp + fantasy.pickmul*gp
@@ -650,7 +693,7 @@ def matchup():
                     if matchup.pick1mid:
                         if matchup.pick1mid[0].id == game.champion:
                             if matchup.ban1mid == matchup.pick1mid:
-                                #do nothing
+                                # do nothing
                                 tp = tp + gp
                             else:
                                 tp = tp + fantasy.pickmul*gp
@@ -675,7 +718,7 @@ def matchup():
                     if matchup.pick1bottom:
                         if matchup.pick1bottom[0].id == game.champion:
                             if matchup.ban1bottom == matchup.pick1bottom:
-                                #do nothing
+                                # do nothing
                                 tp = tp + gp
                             else:
                                 tp = tp + fantasy.pickmul*gp
@@ -700,7 +743,7 @@ def matchup():
                     if matchup.pick1support:
                         if matchup.pick1support[0].id == game.champion:
                             if matchup.ban1support == matchup.pick1support:
-                                #do nothing
+                                # do nothing
                                 tp = tp + gp
                             else:
                                 tp = tp + fantasy.pickmul*gp
@@ -721,7 +764,6 @@ def matchup():
                         else:
                             tp = tp + gp
 
-
         if role.role == 'top':
             matchup.base1top = bp
             matchup.total1top = tp
@@ -737,26 +779,24 @@ def matchup():
         elif role.role == 'support':
             matchup.base1support = bp
             matchup.total1support = tp
-        
-        db.session.commit()
-    matchup.base1 = matchup.base1top + matchup.base1jungle + matchup.base1mid + matchup.base1bottom + matchup.base1support
-    matchup.total1 = matchup.total1top + matchup.total1jungle + matchup.total1mid + matchup.total1bottom + matchup.total1support
-    db.session.commit()
-        
 
-        
+        db.session.commit()
+    matchup.base1 = matchup.base1top + matchup.base1jungle + \
+        matchup.base1mid + matchup.base1bottom + matchup.base1support
+    matchup.total1 = matchup.total1top + matchup.total1jungle + \
+        matchup.total1mid + matchup.total1bottom + matchup.total1support
+    db.session.commit()
 
     print("team 2")
     for role in team2.roles:
         games = Gamestats.query.filter_by(role=role.id, round=round.number)
         for game in games:
             times.append(game.date)
-            print(game)
-            print(game.champion)
-            if not game.champion and (game.date + timedelta(hours = 1)) < datetime.today():
+            if not game.champion and (game.date + timedelta(hours=1)) < now:
                 if not game.worker:
                     task = background_scrape.delay(game.gameId)
-                    thisGame = Gamestats.query.filter_by(gameId = game.gameId).all()
+                    thisGame = Gamestats.query.filter_by(
+                        gameId=game.gameId).all()
                     for eachPlayer in thisGame:
                         eachPlayer.worker = task.id
                         db.session.commit()
@@ -804,7 +844,8 @@ def matchup():
                             print(dstats)
                     elif task_progress.status == "FAILURE":
                         task = background_scrape.delay(game.gameId)
-                        thisGame = Gamestats.query.filter_by(gameId = game.gameId).all()
+                        thisGame = Gamestats.query.filter_by(
+                            gameId=game.gameId).all()
                         for eachPlayer in thisGame:
                             eachPlayer.worker = task.id
                             db.session.commit()
@@ -835,7 +876,7 @@ def matchup():
                     if matchup.pick2top:
                         if matchup.pick2top[0].id == game.champion:
                             if matchup.ban2top == matchup.pick2top:
-                                #do nothing
+                                # do nothing
                                 tp = tp + gp
                             else:
                                 tp = tp + fantasy.pickmul*gp
@@ -858,10 +899,9 @@ def matchup():
 
                 elif role.role == 'jungle':
                     if matchup.pick2jungle:
-                        print(matchup.pick2jungle[0].id, game.champion)
                         if matchup.pick2jungle[0].id == game.champion:
                             if matchup.ban2jungle == matchup.pick2jungle:
-                                #do nothing
+                                # do nothing
                                 tp = tp + gp
                             else:
                                 tp = tp + fantasy.pickmul*gp
@@ -886,7 +926,7 @@ def matchup():
                     if matchup.pick2mid:
                         if matchup.pick2mid[0].id == game.champion:
                             if matchup.ban2mid == matchup.pick2mid:
-                                #do nothing
+                                # do nothing
                                 tp = tp + gp
                             else:
                                 tp = tp + fantasy.pickmul*gp
@@ -911,7 +951,7 @@ def matchup():
                     if matchup.pick2bottom:
                         if matchup.pick2bottom[0].id == game.champion:
                             if matchup.ban2bottom == matchup.pick2bottom:
-                                #do nothing
+                                # do nothing
                                 tp = tp + gp
                             else:
                                 tp = tp + fantasy.pickmul*gp
@@ -936,7 +976,7 @@ def matchup():
                     if matchup.pick2support:
                         if matchup.pick2support[0].id == game.champion:
                             if matchup.ban2support == matchup.pick2support:
-                                #do nothing
+                                # do nothing
                                 tp = tp + gp
                             else:
                                 tp = tp + fantasy.pickmul*gp
@@ -957,7 +997,6 @@ def matchup():
                         else:
                             tp = tp + gp
 
-
         if role.role == 'top':
             matchup.base2top = bp
             matchup.total2top = tp
@@ -973,28 +1012,134 @@ def matchup():
         elif role.role == 'support':
             matchup.base2support = bp
             matchup.total2support = tp
-        
+
         db.session.commit()
-    matchup.base2 = matchup.base2top + matchup.base2jungle + matchup.base2mid + matchup.base2bottom + matchup.base2support
-    matchup.total2 = matchup.total2top + matchup.total2jungle + matchup.total2mid + matchup.total2bottom + matchup.total2support
+    matchup.base2 = matchup.base2top + matchup.base2jungle + \
+        matchup.base2mid + matchup.base2bottom + matchup.base2support
+    matchup.total2 = matchup.total2top + matchup.total2jungle + \
+        matchup.total2mid + matchup.total2bottom + matchup.total2support
     db.session.commit()
-                                
 
     # For each player in the matchup
     # If there is a champion entry, do nothing (entry already full)
     # If there is no champion entry, but there is a workerID, check the worker status
-        # if worker is finished, pull and store all the data.
+    # if worker is finished, pull and store all the data.
     # If there is no champ entry and no worker, create a worker.
 
     if min(times) < now:
         picks_locked = True
+
+        if (team1.owner == robot.id) and (not matchup.pick1top):
+            roles = ['top', 'jungle', 'mid', 'bottom', 'support']
+            picks = {'top': [], 'jungle': [],
+                     'mid': [], 'bottom': [], 'support': []}
+            bans = {'top': [], 'jungle': [],
+                    'mid': [], 'bottom': [], 'support': []}
+            for team in tournament.teams:
+                print(team)
+                for role in team.roles:
+                    if role.role in roles:
+                        print(role)
+                        for game in role.games:
+                            if game.champion:
+                                if game.round < round.number:
+                                    print(game)
+                                    picks[role.role].append(game.champion)
+                                    bans[role.role].append(game.champion)
+                                    if role in team1.roles:
+                                        picks[role.role].append(game.champion)
+                                        picks[role.role].append(game.champion)
+                                    if role in team2.roles:
+                                        bans[role.role].append(game.champion)
+                                        bans[role.role].append(game.champion)
+            for role in roles:
+                if len(picks[role]) == 0:
+                    picks[role].append(random.randint(0, len(champions)-1))
+                    picks[role].append(random.randint(0, len(champions)-1))
+                    bans[role].append(random.randint(0, len(champions)-1))
+                    bans[role].append(random.randint(0, len(champions)-1))
+
+            matchup.pick1top.append(
+                champions[random.choice(picks['top'])-1])
+            matchup.pick1jungle.append(
+                champions[random.choice(picks['jungle'])-1])
+            matchup.pick1mid.append(
+                champions[random.choice(picks['mid'])-1])
+            matchup.pick1bottom.append(
+                champions[random.choice(picks['bottom'])-1])
+            matchup.pick1support.append(
+                champions[random.choice(picks['support'])-1])
+            matchup.ban2top.append(
+                champions[random.choice(bans['top'])-1])
+            matchup.ban2jungle.append(
+                champions[random.choice(bans['jungle'])-1])
+            matchup.ban2mid.append(
+                champions[random.choice(bans['mid'])-1])
+            matchup.ban2bottom.append(
+                champions[random.choice(bans['bottom'])-1])
+            matchup.ban2support.append(
+                champions[random.choice(bans['support'])-1])
+            db.session.commit()
+            print("Robot pick/ban done")
+
+        if (team2.owner == robot.id) and (not matchup.pick2top):
+            roles = ['top', 'jungle', 'mid', 'bottom', 'support']
+            picks = {'top': [], 'jungle': [],
+                     'mid': [], 'bottom': [], 'support': []}
+            bans = {'top': [], 'jungle': [],
+                    'mid': [], 'bottom': [], 'support': []}
+            for team in tournament.teams:
+                print(team)
+                for role in team.roles:
+                    if role.role in roles:
+                        print(role)
+                        for game in role.games:
+                            if game.champion:
+                                if game.round < round.number:
+                                    print(game)
+                                    picks[role.role].append(game.champion)
+                                    bans[role.role].append(game.champion)
+                                    if role in team2.roles:
+                                        picks[role.role].append(game.champion)
+                                        picks[role.role].append(game.champion)
+                                    if role in team1.roles:
+                                        bans[role.role].append(game.champion)
+                                        bans[role.role].append(game.champion)
+            for role in roles:
+                if len(picks[role]) == 0:
+                    picks[role].append(random.randint(0, len(champions)-1))
+                    picks[role].append(random.randint(0, len(champions)-1))
+                    bans[role].append(random.randint(0, len(champions)-1))
+                    bans[role].append(random.randint(0, len(champions)-1))
+            matchup.pick2top.append(
+                champions[random.choice(picks['top'])-1])
+            matchup.pick2jungle.append(
+                champions[random.choice(picks['jungle'])-1])
+            matchup.pick2mid.append(
+                champions[random.choice(picks['mid'])-1])
+            matchup.pick2bottom.append(
+                champions[random.choice(picks['bottom'])-1])
+            matchup.pick2support.append(
+                champions[random.choice(picks['support'])-1])
+            matchup.ban1top.append(
+                champions[random.choice(bans['top'])-1])
+            matchup.ban1jungle.append(
+                champions[random.choice(bans['jungle'])-1])
+            matchup.ban1mid.append(
+                champions[random.choice(bans['mid'])-1])
+            matchup.ban1bottom.append(
+                champions[random.choice(bans['bottom'])-1])
+            matchup.ban1support.append(
+                champions[random.choice(bans['support'])-1])
+            db.session.commit()
+            print("Robot pick/ban done")
     else:
         picks_locked = False
 
     return render_template(
         "matchup.html",
         user=current_user,
-        name=current_user.username, team1=team1, team2=team2, matchup=matchup, fantasy=fantasy, round=round, tournament=tournament, bestof=1, champions=champions, now = now, first_match = min(times).timestamp()*1000, picks_locked = picks_locked)
+        name=current_user.username, team1=team1, team2=team2, matchup=matchup, fantasy=fantasy, round=round, tournament=tournament, bestof=1, champions=champions, now=now, first_match=min(times).timestamp()*1000, picks_locked=picks_locked)
 
 
 @main_blueprint.route("/manage", methods=['GET', 'POST'])
@@ -1006,7 +1151,7 @@ def manage():
     tournament = Tournament.query.filter_by(id=fantasy.tournament).first()
     league = League.query.filter_by(id=tournament.league).first()
     print('Pre-post')
-
+    print(len(fantasy.teams))
     if(request.method == 'POST'):
         action = request.form.get('action')
         print(action[0:8])
@@ -1088,6 +1233,33 @@ def manage():
             # generate matchup objects
             # team pairs for each round
             teams = fantasy.teams
+            robot = User.query.filter_by(email="bot@bot").first()
+            if (len(teams) % 2 == 1) or (robot in fantasy.users):
+
+                if not (robot in fantasy.users):
+                    fantasy.users.append(robot)
+                    new_fantasy_team = Fantasyteam(
+                        league=fantasy.id, owner=robot.id, name=robot.username + " team")
+                    db.session.add(new_fantasy_team)
+                    db.session.commit()
+                current_team = Fantasyteam.query.filter_by(
+                    league=fantasy.id, owner=robot.id).first()
+                roles = ['top', 'jungle', 'mid', 'bottom', 'support']
+                available = {'top': [], 'jungle': [],
+                             'mid': [], 'bottom': [], 'support': []}
+                for team in tournament.teams:
+                    for role in team.roles:
+                        if (role.role in roles) and not (role in fantasy.roles):
+                            available[role.role].append(role)
+
+                for role in roles:
+                    pick = random.choice(available[role])
+                    current_role = Role.query.filter_by(
+                        id=pick.id).first()
+                    current_team.roles.append(current_role)
+                    fantasy.roles.append(current_role)
+                    db.session.commit()
+            teams = fantasy.teams
             for round in fantasy.rounds:
                 for i in range(int(len(teams)/2)):
                     new_matchup = Matchup(
@@ -1133,10 +1305,11 @@ def manage():
             fantasy.elder = request.form.get("elder_points")
             fantasy.win = request.form.get("win_points")
             db.session.commit()
+    champions = Champion.query.all()
     return render_template(
         "manage.html",
         user=current_user,
-        name=current_user.username, fantasy=fantasy, league=league, tournament=tournament
+        name=current_user.username, fantasy=fantasy, league=league, tournament=tournament, champions=champions
     )
 
 
@@ -1211,8 +1384,10 @@ def admin():
                 champexists = Champion.query.filter_by(name=i).first()
 
                 if not os.path.exists('project/client/static/img/league/champs/' + i + '.png'):
-                    champ_img = requests.get('https://ddragon.leagueoflegends.com/cdn/12.11.1/img/champion/'+ i + '.png')
-                    imgfile = open('project/client/static/img/league/champs/' + i + '.png', 'wb')
+                    champ_img = requests.get(
+                        'https://ddragon.leagueoflegends.com/cdn/12.11.1/img/champion/' + i + '.png')
+                    imgfile = open(
+                        'project/client/static/img/league/champs/' + i + '.png', 'wb')
                     imgfile.write(champ_img.content)
                     imgfile.close()
                     print("pulled img")
@@ -1222,6 +1397,25 @@ def admin():
                     db.session.commit()
                     print("made champ db entry")
             textfile.close()
+        elif(action == "movePlayer"):
+            print(request.form)
+            if request.form.get("role") != "":
+                print("valid?")
+                player = int(request.form.get('player'))
+                player = Player.query.filter_by(id=player).first()
+                print(player.role)
+                team = Team.query.filter_by(id=player.team).first()
+                role = Role.query.filter_by(id=player.role).first()
+                role.players.remove(player)
+                db.session.commit()
+                print("removed ", player.name, " from ", team.name, role.role)
+                for role1 in team.roles:
+                    if role1.role == request.form.get("role"):
+                        role1.players.append(player)
+                        db.session.commit()
+                        print("added ", player.name,
+                              " to ", team.name, role1.role)
+                        print(player.role)
 
     if (current_user.id == 1):
         allLeagues = League.query.all()

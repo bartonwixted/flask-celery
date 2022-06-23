@@ -1,5 +1,4 @@
-{% extends "base.html" %} {% block title %} {{week}} matchup, {{ name }} vs long
-query? handle server side, I think.. {% endblock %}
+{% extends "base.html" %} {% block title %} {{round.name}} matchup, {{ team1.name }} vs {{team2.name}} {% endblock %}
 
 {% block navbar %}
 <a class="nav-item nav-link" id="Fantasy" href="/manage?leagueid={{fantasy.id}}">{{fantasy.leagueName}}</a>
@@ -27,9 +26,11 @@ query? handle server side, I think.. {% endblock %}
 <meta name="viewport" content="width=device-width, initial-scale=1,
             shrink-to-fit=no">
 
-
-Time until picks locked: <p id="demo"></p>
-
+{% if picks_locked == False %}
+<p id="demo">Pick timer</p>
+{% else %}
+<p>Picks are Locked</p>
+{% endif %}
 <form method="POST">
   <table style="width: 100%" border="1">
     <tbody>
@@ -58,6 +59,7 @@ Time until picks locked: <p id="demo"></p>
                             <td style="width: 100%; text-align: center;">{{team.code}}
                               <br />
                               {{ player.name }}
+
                             </td>
 
                           </tr>
@@ -304,6 +306,7 @@ Time until picks locked: <p id="demo"></p>
                                             <img title="{{champions[game.champion-1].name}}"
                                               src="/static/img/league/champs/{{ champions[game.champion-1].name }}.png"
                                               width="50" height="50" />
+                                            <br />
                                           </td>
                                         </tr>
                                       </tbody>
@@ -335,7 +338,14 @@ Time until picks locked: <p id="demo"></p>
                                       /
                                       <span style="color: #888888">{{ game.cs15 }}</span>
                                       {% else %}
+                                      {% if not game.worker %}
                                       {{game.date}}
+                                      {% else %}
+                                      Processing
+                                      <div class="spinner-border spinner-border-sm" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                      </div>
+                                      {% endif %}
                                       {% endif %}
                                     </td>
                                     <td style="text-align: center; width: 30%">
@@ -489,7 +499,14 @@ Time until picks locked: <p id="demo"></p>
                                       /
                                       <span style="color: #888888">{{ game.cs15 }}</span>
                                       {% else %}
+                                      {% if not game.worker %}
                                       {{game.date}}
+                                      {% else %}
+                                      Processing
+                                      <div class="spinner-border spinner-border-sm" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                      </div>
+                                      {% endif %}
                                       {% endif %}
                                     </td>
 
@@ -815,8 +832,9 @@ Time until picks locked: <p id="demo"></p>
   </table>
 
   <br />
-
+  {% if picks_locked == False %}
   <button type="submit" class="btn btn-primary">Save picks/bans</button>
+  {% endif %}
 </form>
 
 {% endblock %}
@@ -842,13 +860,13 @@ Time until picks locked: <p id="demo"></p>
     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
     // Display the result in the element with id="demo"
-    document.getElementById("demo").innerHTML = days + "d " + hours + "h "
+    document.getElementById("demo").innerHTML = "Picks will lock in " + days + "d " + hours + "h "
       + minutes + "m " + seconds + "s ";
 
     // If the count down is finished, write some text
     if (distance < 0) {
       clearInterval(x);
-      document.getElementById("demo").innerHTML = "EXPIRED";
+      document.getElementById("demo").innerHTML = "Picks Locked";
     }
   }, 1000);
 </script>

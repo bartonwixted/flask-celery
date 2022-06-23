@@ -95,10 +95,8 @@ def pull_league_tournaments(league_id):
     for tournament in tournaments['leagues'][0]['tournaments']:
         if tournament['startDate'] >= str(datetime.datetime.today().date()):
             print(tournament)
-            
 
-
-    #should output any tournamnents that are ongoing or haven't started yet.
+    # should output any tournamnents that are ongoing or haven't started yet.
     return 1
 
 
@@ -106,7 +104,8 @@ def pull_league_schedule(tournamentId, startDate, endDate):
     scheduleTemp = api.get_schedule(league_id=tournamentId)
     schedule = scheduleTemp['schedule']['events']
     while scheduleTemp['schedule']['pages']['newer'] and endDate > scheduleTemp['schedule']['events'][-1]['startTime']:
-        scheduleTemp = api.get_schedule(league_id=tournamentId, pageToken=scheduleTemp['schedule']['pages']['newer'])
+        scheduleTemp = api.get_schedule(
+            league_id=tournamentId, pageToken=scheduleTemp['schedule']['pages']['newer'])
     while(startDate < scheduleTemp['schedule']['events'][0]['startTime']):
 
         schedule = scheduleTemp['schedule']['events']
@@ -130,14 +129,39 @@ def pull_league_schedule(tournamentId, startDate, endDate):
 
 
 def pull_game_data(game):
+
+    now = datetime.datetime.now(datetime.timezone.utc)
+    now = now - \
+        datetime.timedelta(minutes=10, seconds=now.second,
+                           microseconds=now.microsecond)
+    now_string = str(now.isoformat()).replace('+00:00', 'Z')
+    time.sleep(20)
     participants = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
 
-    gameWindow = api.get_window(game_id=game)
-    gameDetails = api.get_details(game_id=game)
+    gameWindow = api.get_window(game_id=game, starting_time=now_string)
+    gameDetails = api.get_details(game_id=game, starting_time=now_string)
     stamp = gameDetails["frames"][0]["rfc460Timestamp"]
+
+    if len(stamp) == 20:
+        stamp = stamp[0:19:1] + ".000Z"
+
+    point = datetime.datetime.strptime(stamp, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+    while gameWindow["frames"][-1]["gameState"] == "in_game":
+
+        point = point - datetime.timedelta(
+            seconds=(point.second % 10) - 10, microseconds=point.microsecond
+        )
+
+        stamp = str(point.isoformat()) + "Z"
+        # print(stamp)
+
+        gameWindow = api.get_window(game_id=game, starting_time=stamp)
+        gameDetails = api.get_details(game_id=game, starting_time=stamp)
 
     # We assume the game is finished, but we'll check anyway.
     # This section gets all the stats discernible from the final frame of the game.
+    stamp = gameDetails["frames"][0]["rfc460Timestamp"]
 
     if gameWindow["frames"][-1]["gameState"] == "finished":
 
@@ -500,7 +524,6 @@ def pull_game_data(game):
 
         stamp = str(point.isoformat()) + "Z"
         # print(stamp)
-
         try:
 
             gameWindow = api.get_window(game_id=game, starting_time=stamp)
