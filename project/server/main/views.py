@@ -1,5 +1,6 @@
 # project/server/main/views.py
 
+import threading
 from celery.result import AsyncResult
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -549,8 +550,10 @@ def matchup():
             times.append(game.date)
             print(game.date)
             print(game.champion)
+
             if not game.champion and (game.date + timedelta(hours=1)) < now:
                 if not game.worker:
+                    print("getting game")
                     task = background_scrape.delay(game.gameId)
                     thisGame = Gamestats.query.filter_by(
                         gameId=game.gameId).all()
@@ -558,10 +561,15 @@ def matchup():
                         eachPlayer.worker = task.id
                         db.session.commit()
                 else:
+                    print(game.worker)
+                    print("result")
                     task_progress = AsyncResult(game.worker)
+                    print(task_progress.status)
                     if task_progress.status == "SUCCESS":
+                        print('hi debugger')
+                        print(task_progress.result != 'aaa')
                         gamedata = task_progress.result
-                        for data in gamedata:
+                        for idx, data in enumerate(gamedata):
                             dteam = Team.query.filter_by(
                                 esportsId=data['teamId'], tournament=tournament.id).first()
                             print(dteam.name)
@@ -594,7 +602,17 @@ def matchup():
                             dstats.cs = data['cs']
                             dstats.wardsKilled = data['wardsKilled']
                             dstats.wardsPlaced = data['wardsPlaced']
-                            dstats.cs15 = data['cs15']
+                            if idx < 5:
+                                if data['cs15'] > gamedata[idx + 5]['cs15']:
+                                    dstats.cs15 = 1
+                                else:
+                                    dstats.cs15 = 0
+                            else:
+                                if data['cs15'] > gamedata[idx - 5]['cs15']:
+                                    dstats.cs15 = 1
+                                else:
+                                    dstats.cs15 = 0
+
                             dstats.firstBlood = data['firstBlood']
                             dstats.firstBaron = data['firstBaron']
                             dstats.firstDragon = data['firstDragon']
@@ -606,17 +624,17 @@ def matchup():
                             dstats.dragons = ''
                             for dragon in data['dragons']:
                                 dstats.dragons = dstats.dragons + dragon[0]
+
                             db.session.commit()
                             print(dstats)
                     elif task_progress.status == "FAILURE":
+
                         task = background_scrape.delay(game.gameId)
                         thisGame = Gamestats.query.filter_by(
                             gameId=game.gameId).all()
                         for eachPlayer in thisGame:
                             eachPlayer.worker = task.id
                             db.session.commit()
-                    elif task_progress.status == "LOOKATME":
-                        print("ASASFASDFASDFADFASDF")
         bp = 0
         tp = 0
         for game in games:
@@ -628,7 +646,7 @@ def matchup():
                 gp = gp + game.cs * fantasy.cs
                 gp = gp + game.wardsKilled * fantasy.wardKill
                 gp = gp + game.wardsPlaced * fantasy.wardPlace
-                #gp = gp + game.cs15 * fantasy.morecs15
+                gp = gp + game.cs15 * fantasy.morecs15
                 gp = gp + game.firstBlood * fantasy.firstBlood
                 gp = gp + game.firstBaron * fantasy.firstBaron
                 gp = gp + game.firstDragon * fantasy.firstDragon
@@ -792,6 +810,7 @@ def matchup():
         games = Gamestats.query.filter_by(role=role.id, round=round.number)
         for game in games:
             times.append(game.date)
+
             if not game.champion and (game.date + timedelta(hours=1)) < now:
                 if not game.worker:
                     task = background_scrape.delay(game.gameId)
@@ -804,7 +823,7 @@ def matchup():
                     task_progress = AsyncResult(game.worker)
                     if task_progress.status == "SUCCESS":
                         gamedata = task_progress.result
-                        for data in gamedata:
+                        for idx, data in enumerate(gamedata):
                             dteam = Team.query.filter_by(
                                 esportsId=data['teamId'], tournament=tournament.id).first()
                             print(dteam.name)
@@ -828,7 +847,16 @@ def matchup():
                             dstats.cs = data['cs']
                             dstats.wardsKilled = data['wardsKilled']
                             dstats.wardsPlaced = data['wardsPlaced']
-                            dstats.cs15 = data['cs15']
+                            if idx < 5:
+                                if data['cs15'] > gamedata[idx + 5]['cs15']:
+                                    dstats.cs15 = 1
+                                else:
+                                    dstats.cs15 = 0
+                            else:
+                                if data['cs15'] > gamedata[idx - 5]['cs15']:
+                                    dstats.cs15 = 1
+                                else:
+                                    dstats.cs15 = 0
                             dstats.firstBlood = data['firstBlood']
                             dstats.firstBaron = data['firstBaron']
                             dstats.firstDragon = data['firstDragon']
@@ -842,7 +870,9 @@ def matchup():
                                 dstats.dragons = dstats.dragons + dragon[0]
                             db.session.commit()
                             print(dstats)
+
                     elif task_progress.status == "FAILURE":
+
                         task = background_scrape.delay(game.gameId)
                         thisGame = Gamestats.query.filter_by(
                             gameId=game.gameId).all()
@@ -861,7 +891,7 @@ def matchup():
                 gp = gp + game.cs * fantasy.cs
                 gp = gp + game.wardsKilled * fantasy.wardKill
                 gp = gp + game.wardsPlaced * fantasy.wardPlace
-                #gp = gp + game.cs15 * fantasy.morecs15
+                gp = gp + game.cs15 * fantasy.morecs15
                 gp = gp + game.firstBlood * fantasy.firstBlood
                 gp = gp + game.firstBaron * fantasy.firstBaron
                 gp = gp + game.firstDragon * fantasy.firstDragon
@@ -1012,12 +1042,13 @@ def matchup():
         elif role.role == 'support':
             matchup.base2support = bp
             matchup.total2support = tp
-
         db.session.commit()
+    print(matchup.base2top)
     matchup.base2 = matchup.base2top + matchup.base2jungle + \
         matchup.base2mid + matchup.base2bottom + matchup.base2support
     matchup.total2 = matchup.total2top + matchup.total2jungle + \
         matchup.total2mid + matchup.total2bottom + matchup.total2support
+    print(matchup.base2top)
     db.session.commit()
 
     # For each player in the matchup
@@ -1145,7 +1176,6 @@ def matchup():
 @main_blueprint.route("/manage", methods=['GET', 'POST'])
 @login_required
 def manage():
-
     leagueid = request.args.get('leagueid')
     fantasy = Fantasyleague.query.filter_by(id=leagueid).first()
     tournament = Tournament.query.filter_by(id=fantasy.tournament).first()
@@ -1306,10 +1336,13 @@ def manage():
             fantasy.win = request.form.get("win_points")
             db.session.commit()
     champions = Champion.query.all()
+    now = 2
+    if current_user.id == 1:
+        now = 2
     return render_template(
         "manage.html",
         user=current_user,
-        name=current_user.username, fantasy=fantasy, league=league, tournament=tournament, champions=champions
+        name=current_user.username, fantasy=fantasy, league=league, tournament=tournament, champions=champions, picks_locked=True, now=now
     )
 
 

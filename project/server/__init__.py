@@ -35,7 +35,7 @@ def create_app(script_info=None):
     create_database(app)
 
     login_manager = LoginManager()
-    login_manager.login_view = 'main_blueprint.login'
+    login_manager.login_view = 'main.login'
     login_manager.init_app(app)
 
     @login_manager.user_loader

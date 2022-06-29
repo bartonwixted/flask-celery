@@ -870,4 +870,52 @@
     }
   }, 1000);
 </script>
+
+<script type="text/javascript">
+  function custom_template(obj) {
+    var data = $(obj.element).data();
+    var text = $(obj.element).text();
+    if (data && data['img_src']) {
+      img_src = data['img_src'];
+      template = $("<div><img src=\"" + img_src + "\" style=\"margin:-15px-15px;width:30px;height:30px;\"/>" + " " + text + "</div>");
+      return template;
+    }
+  }
+  function custom_template2(obj) {
+    var data = $(obj.element).data();
+    var text = $(obj.element).text();
+    if (data && data['img_src']) {
+      img_src = data['img_src'];
+      template = $("<div><img src=\"" + img_src + "\" style=\"margin:-15px-15px;width:60px;height:60px;\"/> </div>");
+      return template;
+    }
+  }
+  var options = {
+    'templateSelection': custom_template2,
+    'templateResult': custom_template,
+    'dropdownAutoWidth': true
+  }
+  $('#id_team1_top_ban1').select2(options);
+  $('#id_team1_jungle_ban1').select2(options);
+  $('#id_team1_mid_ban1').select2(options);
+  $('#id_team1_bottom_ban1').select2(options);
+  $('#id_team1_support_ban1').select2(options);
+  $('#id_team1_top_pick1').select2(options);
+  $('#id_team1_jungle_pick1').select2(options);
+  $('#id_team1_mid_pick1').select2(options);
+  $('#id_team1_bottom_pick1').select2(options);
+  $('#id_team1_support_pick1').select2(options);
+  $('#id_team2_top_ban1').select2(options);
+  $('#id_team2_jungle_ban1').select2(options);
+  $('#id_team2_mid_ban1').select2(options);
+  $('#id_team2_bottom_ban1').select2(options);
+  $('#id_team2_support_ban1').select2(options);
+  $('#id_team2_top_pick1').select2(options);
+  $('#id_team2_jungle_pick1').select2(options);
+  $('#id_team2_mid_pick1').select2(options);
+  $('#id_team2_bottom_pick1').select2(options);
+  $('#id_team2_support_pick1').select2(options);
+  $('.select2-container--default .select2-selection--single').css({ 'height': '60px', 'width': '60px', 'background-image': 'none', 'padding': '0px' });
+  $('.select2-selection__rendered').css({ 'margin': '-1px -9px' })
+</script>
 {% endblock %}

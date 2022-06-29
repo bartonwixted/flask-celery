@@ -27,15 +27,11 @@ def create_task(task_type):
 @celery.task(name="background_scrape", bind=True)
 def background_scrape(self, gameID):
     self.update_state(state='LOOKATME')
-    now = datetime.datetime.now(datetime.timezone.utc)
-    now = now - \
-        datetime.timedelta(minutes=10, seconds=now.second,
-                           microseconds=now.microsecond)
-    now_string = str(now.isoformat()).replace('+00:00', 'Z')
+
     participants = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
 
-    gameWindow = api.get_window(game_id=gameID, starting_time=now_string)
-    gameDetails = api.get_details(game_id=gameID, starting_time=now_string)
+    gameWindow = api.get_window(game_id=gameID)
+    gameDetails = api.get_details(game_id=gameID)
     stamp = gameDetails["frames"][0]["rfc460Timestamp"]
 
     if len(stamp) == 20:
@@ -43,7 +39,7 @@ def background_scrape(self, gameID):
 
     point = datetime.datetime.strptime(stamp, "%Y-%m-%dT%H:%M:%S.%fZ")
 
-    while gameWindow["frames"][-1]["gameState"] == "in_game":
+    while gameWindow["frames"][-1]["gameState"] != "finished":
 
         point = point - datetime.timedelta(
             seconds=(point.second % 10) - 10, microseconds=point.microsecond
@@ -167,7 +163,7 @@ def background_scrape(self, gameID):
 
     # If the game isn't finished, then we should be using the "ongoing game" function.
     else:
-        quit(0)
+        return(stamp)
 
     gameStart = "0000-00-00T00:00:00.000Z"
 

@@ -218,7 +218,7 @@ Manage your fantasy league {{ fantasy.leagueName }}
     </table>
     <button type="submit" name="action" class="btn btn-primary" value="Settings">Save</button>
 </form>
-
+{% if not fantasy.rounds %}
 <h2 align="center">Add a player</h2>
 
 <form method="POST">
@@ -226,94 +226,34 @@ Manage your fantasy league {{ fantasy.leagueName }}
     <button type="submit" name="action" class="btn btn-primary" value="Invite">Invite</button>
 </form>
 
-{% endif %}
 
-{% if not fantasy.rounds %}
-{% if user.id == fantasy.owner %}
+
+
+
 <form method="POST">
     <button type="submit" name="action" class="btn btn-primary" value="generate">Generate</button>
 </form>
 {% endif %}
-{% else %}
-<table style="border-collapse: collapse; width: 100%;" border="1">
-    <tbody>
-        {% for i in range((fantasy.rounds|length // 4)) %}
-        <tr>
-            {% for round in fantasy.rounds[(i*4):(i*4)+4] %}
-            <td style="width:25%;">
-                <table style="border-collapse: collapse; width: 100%;" border="1">
-                    <tbody>
-                        <tr>
-                            <td>
-                                {{round.name}}
-                            </td>
-                        </tr>
-                        {% for matchup in round.weekstats %}
-                        <tr>
-                            <td>
-                                <table style="border-collapse: collapse; width: 100%;" border="1">
-                                    <tbody>
-                                        <tr>
-                                            <td style="width: 20%;">
-                                                {% for team in fantasy.teams %}
-                                                {% if team.id == matchup.team1 %}
-                                                {{ team.name }}
-                                                {% endif %}
-                                                {% endfor %}
-                                            </td>
-                                            <td style="width: 20%;">
-                                                {% if matchup.total1 %}
-                                                {{'%0.2f'| format(matchup.total1) }}
-                                                {% endif %}
-                                            </td>
-                                            <td style="width: 20%">
-                                                <a class="nav-item nav-link" id="Home"
-                                                    href="/matchup?leagueid={{fantasy.id}}&m={{matchup.id}}">View</a>
-                                            </td>
-                                            <td style="width: 20%;">
-                                                {% if matchup.total2 %}
-                                                {{'%0.2f'| format(matchup.total2) }}
-                                                {% endif %}
-                                            </td>
-                                            <td style="width: 20%;">
-                                                {% for team in fantasy.teams %}
-                                                {% if team.id == matchup.team2 %}
-                                                {{ team.name }}
-                                                {% endif %}
-                                                {% endfor %}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </td>
-            {% endfor %}
-        </tr>
-        {%endfor%}
-    </tbody>
-</table>
 
+
+{% endif %}
+{% if fantasy.rounds %}
 Testing an alternate display option
-
-<div id="carouselExampleIndicators" class="carousel carousel-dark slide">
+<div id="carouselExampleIndicators" class="carousel carousel-dark slide" data-bs-touch="true">
     <div class="carousel-indicators">
         {% for i in range(fantasy.rounds|length) %}
 
-        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to={{i}} {% if loop.first %}
-            class="active" aria-current="true" {%else%} aria-current="false" {% endif %}
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to={{i}}
+            {% if loop.index == now + 1 %} class="active" aria-current="true" {%else%} aria-current="false" {% endif %}
             aria-label="Slide {{i+1}}"></button>
 
         {% endfor %}
     </div>
-    <div class="carousel-inner">
+    <div class="carousel-inner px-5">
         {% for round in fantasy.rounds %}
-        <div class="carousel-item {% if loop.first %} active {% endif %}">
-            <div class="card d-block w-100" style="padding: 0rem 7rem 3rem 7rem;">
-                <div class="container">
+        <div class="carousel-item {% if loop.index == now + 1 %} active {% endif %}">
+            <div class="card d-block px-0 px-md-5 pb-5">
+                <div class="container px-0 px-md-5">
                     <div class="row">
                         <div class="card-body">
                             <center>
@@ -325,22 +265,24 @@ Testing an alternate display option
                     </div>
                     <div class="accordion" id="{{'round' + round.number|string }}">
                         {% for matchup in round.weekstats %}
+
+
                         <div class="accordion-item">
                             <h2 class="accordion-header"
                                 id="{{'heading' + round.number|string + '_' + matchup.id|string}}">
 
                                 <button
-                                    class="accordion-button {% if not loop.first %}collapsed{% endif %} d-block text-center"
+                                    class="accordion-button {% if not ((matchup.team1 in user.teams|selectattr('id', 'equalto', matchup.team1)|map(attribute = 'id')|list) or (matchup.team2 in user.teams|selectattr('id', 'equalto', matchup.team2)|map(attribute = 'id')|list)) %}collapsed{% endif %} d-block text-center"
                                     type="button" data-bs-toggle="collapse"
                                     data-bs-target="{{'#collapse' + round.number|string + '_' + matchup.id|string}}"
-                                    aria-expanded="{% if loop.first %}true{% else %}false{% endif %}"
+                                    aria-expanded="{% if (matchup.team1 in user.teams|selectattr('id', 'equalto', matchup.team1)|map(attribute = 'id')|list) or (matchup.team2 in user.teams|selectattr('id', 'equalto', matchup.team2)|map(attribute = 'id')|list) %}true{% else %}false{% endif %}"
                                     aria-controls="{{'collapse' + round.number|string + '_' + matchup.id|string}}">
                                     <div class="row">
                                         <div class="col" align="right">
                                             {% for team in fantasy.teams %}
                                             {% if team.id == matchup.team1 %}
                                             {% if matchup.total1 > matchup.total2 and matchup.total1 != 0 %}
-                                            <img src="/static/img/crown.png" width="20" height="20" />
+                                            <img src="/static/img/crown.png" width="15" height="15" />
                                             {% endif %}
                                             {{ team.name }}
                                             <br />
@@ -359,7 +301,7 @@ Testing an alternate display option
                                             {% if team.id == matchup.team2 %}
                                             {{ team.name }}
                                             {% if matchup.total2 > matchup.total1 and matchup.total2 != 0 %}
-                                            <img src="/static/img/crown.png" width="20" height="20" />
+                                            <img src="/static/img/crown.png" width="15" height="15" />
                                             {% endif %}
                                             <br />
                                             {% if matchup.total2 %}
@@ -376,10 +318,15 @@ Testing an alternate display option
 
                             </h2>
                             <div id="{{'collapse' + round.number|string + '_' + matchup.id|string}}"
-                                class="accordion-collapse collapse {% if loop.first %}show{% endif %}"
+                                class="accordion-collapse collapse {% if (matchup.team1 in user.teams|selectattr('id', 'equalto', matchup.team1)|map(attribute = 'id')|list) or (matchup.team2 in user.teams|selectattr('id', 'equalto', matchup.team2)|map(attribute = 'id')|list) %}show{% endif %}"
                                 aria-labelledby="{{'heading' + round.number|string + '_' + matchup.id|string}}"
                                 data-bs-parent="{{'#round' + round.number|string }}">
-                                <div class="accordion-body">
+                                <div class="accordion-body" align="center">
+
+                                    <a class="btn btn-primary" id="Matchup View"
+                                        href="/matchup?leagueid={{fantasy.id}}&m={{matchup.id}}">click here to go to the
+                                        old page to do picks and bans</a>
+
                                     <ul class="list-group">
                                         {% set roles_list = ['top', 'jungle', 'mid', 'bottom', 'support'] %}
                                         {% for this_role in roles_list %}
@@ -409,16 +356,7 @@ Testing an alternate display option
                                                         </div>
                                                         <div class="col">
                                                             <div class="row">
-                                                                <div class="col" align="center">
-                                                                    {% if picks_locked %}
-                                                                    {% if matchup['ban1'+role.role] %}
-                                                                    {% for champ in matchup['ban1' + role.role] %}
-                                                                    <img src="/static/img/league/champs/{{ champ.name }}.png"
-                                                                        width="50" height="50"
-                                                                        style="border: 4px solid #EA4335;" />
-                                                                    {%endfor%}
-                                                                    {%endif%}
-                                                                </div>
+                                                                {% if now >= round.number %}
                                                                 <div class="col" align="center">
                                                                     {% if matchup['pick1'+role.role] %}
                                                                     {% for champ in matchup['pick1' + role.role] %}
@@ -427,21 +365,35 @@ Testing an alternate display option
                                                                         style="border: 4px solid #34A853;" />
                                                                     {%endfor%}
                                                                     {%endif%}
-                                                                    {% endif %}
+
                                                                 </div>
+                                                                <div class="col" align="center">
+
+                                                                    {% if matchup['ban1'+role.role] %}
+                                                                    {% for champ in matchup['ban1' + role.role] %}
+                                                                    <img src="/static/img/league/champs/{{ champ.name }}.png"
+                                                                        width="50" height="50"
+                                                                        style="border: 4px solid #EA4335;" />
+                                                                    {%endfor%}
+                                                                    {%endif%}
+                                                                </div>
+                                                                {% endif %}
                                                             </div>
                                                         </div>
-                                                        <div class="col" align="center">
+                                                        <div class="col" align="left">
                                                             <ul class="list-group list-group-flush">
                                                                 {% for game in role.games|selectattr("round", "equalto", round.number) %}
                                                                 <li class="list-group-item" style="padding:0px;">
-                                                                    {% if game.champion %}
+                                                                    <div class="row">
 
-                                                                    <input type="image"
-                                                                        src="/static/img/league/champs/{{ champions[game.champion-1].name }}.png"
-                                                                        width="50" height="50" data-bs-toggle="popover"
-                                                                        data-bs-trigger="hover focus"
-                                                                        title="{{game.gameId}}" data-bs-content='<div class="row"><div class="col-md-4"><img class="mr-3" title="
+                                                                        {% if game.champion %}
+                                                                        <div class="col px-0 mx-0">
+                                                                            <input type="image"
+                                                                                src="/static/img/league/champs/{{ champions[game.champion-1].name }}.png"
+                                                                                width="50" height="50"
+                                                                                data-bs-toggle="popover"
+                                                                                data-bs-trigger="hover focus"
+                                                                                title="{{game.gameId}}" data-bs-content='<div class="row"><div class="col-md-4"><img class="mr-3" title="
                                                                         {{champions[game.champion-1].name}}"
                                                                         src="/static/img/league/champs/{{ champions[game.champion-1].name }}.png"
                                                                         width="50" height="50" /></div><div class="col-md-8">{{game.kills}}/{{game.deaths}}/{{game.assists}} {{game.cs}} <br/> {% if game.dragons %}
@@ -479,24 +431,67 @@ Testing an alternate display option
                                                                             {% endfor %}
                                                                             {% endif %}
                                                                         </div></div>' data-bs-placement="left"
-                                                                        data-bs-custom-class="popover"
-                                                                        style="margin: 0px 0px -6px 0px;" />
-                                                                    {{'%0.2f'| format(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon)}}
+                                                                                data-bs-custom-class="popover" style="margin: 0px 0px -6px 0px;
+                                                                                {% if champions[game.champion-1] in matchup['pick1' + role.role] %}
+                                                                        {% if champions[game.champion-1] in matchup['ban1' + role.role] %}
+                                                                        border: solid #fbbc04
+                                                                        {% else %}
+                                                                        border: solid #34A853
+                                                                        {% endif %}
+                                                                        {% else %}
+                                                                        {% if champions[game.champion-1] in matchup['ban1' + role.role] %}
+                                                                        border: solid #EA4335
+                                                                        {% else %}
+                                                                        border: solid #000000
+                                                                        {% endif %}
+                                                                        {% endif %}
+                                                                                " />
+                                                                        </div>
+                                                                        <div class="col-md-6 px-0 mx-0 text-nowrap">
+                                                                            {% if champions[game.champion-1] in matchup['pick1' + role.role] %}
+                                                                            {% if champions[game.champion-1] in matchup['ban1' + role.role] %}
+                                                                            <span style="color: #000000">
+                                                                                {{'%0.2f'| format(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15)}}
+                                                                            </span>
+                                                                            {% else %}
+                                                                            <span
+                                                                                style="color: #000000; background-color: #EEFFEE">
+                                                                                {{'%0.2f'| format(fantasy.pickmul*(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
+                                                                            </span>
+                                                                            {% endif %}
+                                                                            {% else %}
+                                                                            {% if champions[game.champion-1] in matchup['ban1' + role.role] %}
+                                                                            <span
+                                                                                style="color: #000000; background-color: #FFEEEE">
+                                                                                {{'%0.2f'| format(fantasy.banmul*(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
+                                                                            </span>
+                                                                            {% else %}
+                                                                            <span style="color: #000000">
+                                                                                {{'%0.2f'| format(1*(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
+                                                                            </span>
+                                                                            {% endif %}
+                                                                            {% endif %}
 
-                                                                    {% else %}
-                                                                    <img title="None"
-                                                                        src="/static/img/league/champs/empty.png"
-                                                                        width="50" height="50" />
+                                                                            <br />
+                                                                            <span style="color: #888888">
+                                                                                {{'%0.2f'| format(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15)}}
+                                                                            </span>
+                                                                        </div>
+                                                                        {% else %}
+                                                                        <div class="col px-0 mx-0" align="left">
+                                                                            <img title="None"
+                                                                                src="/static/img/league/champs/empty.png"
+                                                                                width="50" height="50" />
+                                                                        </div>
 
-
-                                                                    {% endif %}
-
+                                                                        {% endif %}
+                                                                    </div>
 
                                                                 </li>
                                                                 {% endfor %}
                                                             </ul>
                                                         </div>
-                                                        <div class="col" align="center">
+                                                        <div class="col border" align="center">
                                                             <span
                                                                 style="color: #000000">{{'%0.2f'| format(matchup['total1' + role.role]) }}</span>
                                                             <br />
@@ -537,52 +532,141 @@ Testing an alternate display option
                                                             </div>
                                                         </div>
                                                         <div class="col" align="center">
-                                                            {% if picks_locked %}
-                                                            {% if matchup['ban2'+role.role] %}
-                                                            {% for champ in matchup['ban2' + role.role] %}
-                                                            <img src="/static/img/league/champs/{{ champ.name }}.png"
-                                                                width="50" height="50"
-                                                                style="border: 4px solid #EA4335;" />
-                                                            {%endfor%}
-                                                            {%endif%}
+                                                            <div class="row align-items-center">
+                                                                {% if now >= round.number %}
+                                                                <div class="col" align="center">
+                                                                    {% if matchup['pick2'+role.role] %}
+                                                                    {% for champ in matchup['pick2' + role.role] %}
+                                                                    <img src="/static/img/league/champs/{{ champ.name }}.png"
+                                                                        width="50" height="50"
+                                                                        style="border: 4px solid #34A853;" />
+                                                                    {%endfor%}
+                                                                    {%endif%}
 
-                                                            {% if matchup['pick2'+role.role] %}
-                                                            {% for champ in matchup['pick2' + role.role] %}
-                                                            <img src="/static/img/league/champs/{{ champ.name }}.png"
-                                                                width="50" height="50"
-                                                                style="border: 4px solid #34A853;" />
-                                                            {%endfor%}
-                                                            {%endif%}
-                                                            {% endif %}
+                                                                </div>
+                                                                <div class="col" align="center">
 
+                                                                    {% if matchup['ban2'+role.role] %}
+                                                                    {% for champ in matchup['ban2' + role.role] %}
+                                                                    <img src="/static/img/league/champs/{{ champ.name }}.png"
+                                                                        width="50" height="50"
+                                                                        style="border: 4px solid #EA4335;" />
+                                                                    {%endfor%}
+                                                                    {%endif%}
+                                                                </div>
+                                                                {% endif %}
+                                                            </div>
                                                         </div>
                                                         <div class="col" align="right">
                                                             <ul class="list-group list-group-flush">
                                                                 {% for game in role.games|selectattr("round", "equalto", round.number) %}
                                                                 <li class="list-group-item" style="padding: 0px">
-                                                                    {% if game.champion %}
-                                                                    {{'%0.2f'| format(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon)}}
-                                                                    <input type="image"
-                                                                        src="/static/img/league/champs/{{ champions[game.champion-1].name }}.png"
-                                                                        width="50" height="50" data-bs-toggle="popover"
-                                                                        data-bs-trigger="hover focus"
-                                                                        title="{{game.gameId}}"
-                                                                        data-bs-content='<div class="row"><div class="col"><img class="mr-3" title="
+                                                                    <div class="row flex-row-reverse">
+                                                                        {% if game.champion %}
+
+                                                                        <div class="col px-0 mx-0">
+                                                                            <input type="image"
+                                                                                src="/static/img/league/champs/{{ champions[game.champion-1].name }}.png"
+                                                                                width="50" height="50"
+                                                                                data-bs-toggle="popover"
+                                                                                data-bs-trigger="hover focus"
+                                                                                title="{{game.gameId}}" data-bs-content='<div class="row"><div class="col-md-4"><img class="mr-3" title="
                                                                         {{champions[game.champion-1].name}}"
                                                                         src="/static/img/league/champs/{{ champions[game.champion-1].name }}.png"
-                                                                        width="50" height="50" /></div><div class="col">{{game.kills}}/{{game.deaths}}/{{game.assists}}   {{game.cs}}</div></div>'
-                                                                        data-bs-placement="left"
-                                                                        style="margin: 0px 0px -6px 0px" />
-                                                                    {% else %}
-                                                                    <img title="None"
-                                                                        src="/static/img/league/champs/empty.png"
-                                                                        width="50" height="50" />
-                                                                    {% endif %}
+                                                                        width="50" height="50" /></div><div class="col-md-8">{{game.kills}}/{{game.deaths}}/{{game.assists}} {{game.cs}} <br/> {% if game.dragons %}
+                                                                            {% for i in range(game.dragons|length) %}
+                                                                            {% if game.dragons[i] != 'e' %}
+                                                                            {% if game.firstDragon and i == 0 %}
+                                                                            <img class="dragon" style="margin: -5px"
+                                                                              src="/static/img/league/icons/{{game.dragons[i]}}-dragon2-first.png" width="20"
+                                                                              height="20" />
+                                                                            {% else %}
+                                      
+                                                                            <img class="dragon" style="margin: -5px"
+                                                                              src="/static/img/league/icons/{{game.dragons[i]}}-dragon2.png" width="20"
+                                                                              height="20" />
+                                      
+                                                                            {% endif %}
+                                                                            {% endif %}
+                                                                            {% endfor %}
+                                                                            {% endif %}
+                                                                            {% if game.elder %}
+                                                                            {% for i in range(game.elder) %}
+                                                                            <img style="margin: -5px" src="/static/img/league/icons/elder-dragon2.png"
+                                                                                width="20" height="20" />
+                                                                            {% endfor %}
+                                                                            {% endif %}
+                                                                            {% if game.barons %}
+                                                                            {% for j in range(game.barons) %}
+                                                                            {% if game.firstBaron and j == 0 %}
+                                                                            <img style="margin: -5px" src="/static/img/league/icons/nashor-icon-first.png"
+                                                                                width="20" height="20" />
+                                                                            {% else %}
+                                                                            <img style="margin: -5px" src="/static/img/league/icons/nashor-icon.png"
+                                                                                width="20" height="20" />
+                                                                            {% endif %}
+                                                                            {% endfor %}
+                                                                            {% endif %}
+                                                                        </div></div>' data-bs-placement="right"
+                                                                                data-bs-custom-class="popover" style="margin: 0px 0px -6px 0px;
+                                                                        {% if champions[game.champion-1] in matchup['pick2' + role.role] %}
+                                                                        {% if champions[game.champion-1] in matchup['ban2' + role.role] %}
+                                                                        border: solid #fbbc04
+                                                                        {% else %}
+                                                                        border: solid #34A853
+                                                                        {% endif %}
+                                                                        {% else %}
+                                                                        {% if champions[game.champion-1] in matchup['ban2' + role.role] %}
+                                                                        border: solid #EA4335
+                                                                        {% else %}
+                                                                        border: solid #000000
+                                                                        {% endif %}
+                                                                        {% endif %}
+                                                                        " />
+                                                                        </div>
+                                                                        <div class="col-md-6 px-0 mx-0 text-nowrap">
+                                                                            {% if champions[game.champion-1] in matchup['pick2' + role.role] %}
+                                                                            {% if champions[game.champion-1] in matchup['ban2' + role.role] %}
+                                                                            <span style="color: #000000">
+                                                                                {{'%0.2f'| format(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15)}}
+                                                                            </span>
+                                                                            {% else %}
+                                                                            <span
+                                                                                style="color: #000000; background-color: #EEFFEE">
+                                                                                {{'%0.2f'| format(fantasy.pickmul*(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
+                                                                            </span>
+                                                                            {% endif %}
+                                                                            {% else %}
+                                                                            {% if champions[game.champion-1] in matchup['ban2' + role.role] %}
+                                                                            <span
+                                                                                style="color: #000000; background-color: #FFEEEE">
+                                                                                {{'%0.2f'| format(fantasy.banmul*(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
+                                                                            </span>
+                                                                            {% else %}
+                                                                            <span style="color: #000000">
+                                                                                {{'%0.2f'| format(1*(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
+                                                                            </span>
+                                                                            {% endif %}
+                                                                            {% endif %}
+
+                                                                            <br />
+                                                                            <span style="color: #888888">
+                                                                                {{'%0.2f'| format(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15)}}
+                                                                            </span>
+                                                                        </div>
+                                                                        {% else %}
+                                                                        <div class="col px-0 mx-0" align="right">
+                                                                            <img title="None"
+                                                                                src="/static/img/league/champs/empty.png"
+                                                                                width="50" height="50" />
+                                                                        </div>
+                                                                        {% endif %}
+                                                                    </div>
                                                                 </li>
                                                                 {% endfor %}
                                                             </ul>
                                                         </div>
-                                                        <div class="col" align="center">
+                                                        <div class="col border" align="center">
                                                             <span
                                                                 style="color: #000000">{{'%0.2f'| format(matchup['total2' + role.role]) }}</span>
                                                             <br />
@@ -613,12 +697,12 @@ Testing an alternate display option
         </div>
         {% endfor %}
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+    <button class="carousel-control-prev d-md-block" type="button" data-bs-target="#carouselExampleIndicators"
         data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
     </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+    <button class="carousel-control-next d-md-block" type="button" data-bs-target="#carouselExampleIndicators"
         data-bs-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>

@@ -13,6 +13,8 @@
 
 <h1 align="center">My Leagues</h1>
 
+{% if user.leaguesOwned %}
+
 As owner:
 
 <ul class="list-group list-group-flush" id="notes">
@@ -24,6 +26,8 @@ As owner:
     {% endfor %}
 </ul>
 
+
+{% endif %}
 As participant:
 
 <ul class="list-group list-group-flush" id="leagues">

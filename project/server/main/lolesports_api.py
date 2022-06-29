@@ -1,5 +1,7 @@
-import json, datetime
+import json
+import datetime
 import requests
+
 
 def get_latest_date():
     now = datetime.datetime.now(datetime.timezone.utc)
@@ -11,17 +13,18 @@ def get_latest_date():
     now_string = now.isoformat()
     return str(now_string).replace('+00:00', 'Z')
 
+
 class Lolesports_API:
     API_KEY = {'x-api-key': '0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z'}
     API_URL = 'https://esports-api.lolesports.com/persisted/gw'
     LIVESTATS_API = 'https://feed.lolesports.com/livestats/v1'
-    
+
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update(self.API_KEY)
 
     def get_leagues(self, hl='en-US'):
-        response =  self.session.get(
+        response = self.session.get(
             self.API_URL + '/getLeagues',
             params={'hl': hl}
         )
@@ -49,7 +52,7 @@ class Lolesports_API:
         )
 
         return json.loads(response.text)['data']
-    
+
     def get_schedule(self, hl='en-US', league_id=None, pageToken=None):
         response = self.session.get(
             self.API_URL + '/getSchedule',
@@ -114,7 +117,7 @@ class Lolesports_API:
 
         return json.loads(response.text)['data']
 
-    def get_window(self, game_id, starting_time=get_latest_date()):
+    def get_window(self, game_id, starting_time=None):
         response = self.session.get(
             self.LIVESTATS_API + f'/window/{game_id}',
             params={
@@ -124,7 +127,7 @@ class Lolesports_API:
 
         return json.loads(response.text)
 
-    def get_details(self, game_id, starting_time=get_latest_date(), participant_ids=None):
+    def get_details(self, game_id, starting_time=None, participant_ids=None):
         response = self.session.get(
             self.LIVESTATS_API + f'/details/{game_id}',
             params={
