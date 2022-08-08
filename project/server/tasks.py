@@ -63,9 +63,14 @@ def background_scrape(self, gameID):
             participants[i]["name"] = gameWindow["gameMetadata"]["blueTeamMetadata"][
                 "participantMetadata"
             ][i]["summonerName"]
-            participants[i]["id"] = gameWindow["gameMetadata"]["blueTeamMetadata"][
+            if 'esportsPlayerId' in gameWindow["gameMetadata"]["blueTeamMetadata"][
                 "participantMetadata"
-            ][i]["esportsPlayerId"]
+            ][i]:
+                participants[i]["id"] = gameWindow["gameMetadata"]["blueTeamMetadata"][
+                    "participantMetadata"
+                ][i]["esportsPlayerId"]
+            else:
+                participants[i]["id"] = '105504918290295055'
             participants[i]["pick"] = gameWindow["gameMetadata"]["blueTeamMetadata"][
                 "participantMetadata"
             ][i]["championId"]
@@ -158,7 +163,7 @@ def background_scrape(self, gameID):
 
             participants[i + 5]["elder"] = len(
                 [d for d in gameWindow["frames"][-1]
-                    ["blueTeam"]["dragons"] if d == "elder"]
+                    ["redTeam"]["dragons"] if d == "elder"]
             )
 
     # If the game isn't finished, then we should be using the "ongoing game" function.

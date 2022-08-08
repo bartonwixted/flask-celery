@@ -353,6 +353,16 @@ Testing an alternate display option
                                                                     src="/static/img/league/players/{{team.code}}/{{ player.name }}.png"
                                                                     width="100" height="100" />
                                                             </div>
+                                                            {% if round.number == now + 1 %}
+                                                            {% for game in role.games|selectattr("round", "<", round.number)|sort(reverse = true, attribute="round") %}
+                                                            {% if game.champion %}
+                                                            <img src="/static/img/league/champs/{{champions[game.champion - 1].name}}.png"
+                                                                width="50" height="50"
+                                                                style="border: 4px solid #000000;" />
+                                                            {{'%0.2f'| format(game.kills * fantasy.kill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15)}}
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                            {% endif %}
                                                         </div>
                                                         <div class="col">
                                                             <div class="row">
@@ -413,8 +423,8 @@ Testing an alternate display option
                                                                             {% endif %}
                                                                             {% endfor %}
                                                                             {% endif %}
-                                                                            {% if game.elder %}
-                                                                            {% for i in range(game.elder) %}
+                                                                            {% if game.elders %}
+                                                                            {% for i in range(game.elders) %}
                                                                             <img style="margin: -5px" src="/static/img/league/icons/elder-dragon2.png"
                                                                                 width="20" height="20" />
                                                                             {% endfor %}
@@ -451,30 +461,30 @@ Testing an alternate display option
                                                                             {% if champions[game.champion-1] in matchup['pick1' + role.role] %}
                                                                             {% if champions[game.champion-1] in matchup['ban1' + role.role] %}
                                                                             <span style="color: #000000">
-                                                                                {{'%0.2f'| format(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15)}}
+                                                                                {{'%0.2f'| format(game.kills * fantasy.kill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15)}}
                                                                             </span>
                                                                             {% else %}
                                                                             <span
                                                                                 style="color: #000000; background-color: #EEFFEE">
-                                                                                {{'%0.2f'| format(fantasy.pickmul*(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
+                                                                                {{'%0.2f'| format(fantasy.pickmul*(game.kills * fantasy.kill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
                                                                             </span>
                                                                             {% endif %}
                                                                             {% else %}
                                                                             {% if champions[game.champion-1] in matchup['ban1' + role.role] %}
                                                                             <span
                                                                                 style="color: #000000; background-color: #FFEEEE">
-                                                                                {{'%0.2f'| format(fantasy.banmul*(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
+                                                                                {{'%0.2f'| format(fantasy.banmul*(game.kills * fantasy.kill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
                                                                             </span>
                                                                             {% else %}
                                                                             <span style="color: #000000">
-                                                                                {{'%0.2f'| format(1*(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
+                                                                                {{'%0.2f'| format(1*(game.kills * fantasy.kill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
                                                                             </span>
                                                                             {% endif %}
                                                                             {% endif %}
 
                                                                             <br />
                                                                             <span style="color: #888888">
-                                                                                {{'%0.2f'| format(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15)}}
+                                                                                {{'%0.2f'| format(game.kills * fantasy.kill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15)}}
                                                                             </span>
                                                                         </div>
                                                                         {% else %}
@@ -519,6 +529,7 @@ Testing an alternate display option
                                                     <div class="row flex-row-reverse">
                                                         <div class="col" align="right">
                                                             {{team.code}}
+
                                                             <br />
                                                             {{ player.name }}
                                                             <br />
@@ -530,6 +541,16 @@ Testing an alternate display option
                                                                     src="/static/img/league/players/{{team.code}}/{{ player.name }}.png"
                                                                     width="100" height="100" />
                                                             </div>
+                                                            {% if round.number == now + 1 %}
+                                                            {% for game in role.games|selectattr("round", "<", round.number)|sort(reverse = true, attribute="round") %}
+                                                            {% if game.champion %}
+                                                            {{'%0.2f'| format(game.kills * fantasy.kill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15)}}
+                                                            <img src="/static/img/league/champs/{{champions[game.champion - 1].name}}.png"
+                                                                width="50" height="50"
+                                                                style="border: 4px solid #000000;" />
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                            {% endif %}
                                                         </div>
                                                         <div class="col" align="center">
                                                             <div class="row align-items-center">
@@ -565,6 +586,7 @@ Testing an alternate display option
                                                                         {% if game.champion %}
 
                                                                         <div class="col px-0 mx-0">
+
                                                                             <input type="image"
                                                                                 src="/static/img/league/champs/{{ champions[game.champion-1].name }}.png"
                                                                                 width="50" height="50"
@@ -590,10 +612,12 @@ Testing an alternate display option
                                                                             {% endif %}
                                                                             {% endfor %}
                                                                             {% endif %}
-                                                                            {% if game.elder %}
-                                                                            {% for i in range(game.elder) %}
+                                                                            
+                                                                            {% if game.elders %}
+                                                                            {% for i in range(game.elders) %}
                                                                             <img style="margin: -5px" src="/static/img/league/icons/elder-dragon2.png"
                                                                                 width="20" height="20" />
+                                                                                
                                                                             {% endfor %}
                                                                             {% endif %}
                                                                             {% if game.barons %}
@@ -628,30 +652,30 @@ Testing an alternate display option
                                                                             {% if champions[game.champion-1] in matchup['pick2' + role.role] %}
                                                                             {% if champions[game.champion-1] in matchup['ban2' + role.role] %}
                                                                             <span style="color: #000000">
-                                                                                {{'%0.2f'| format(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15)}}
+                                                                                {{'%0.2f'| format(game.kills * fantasy.kill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15)}}
                                                                             </span>
                                                                             {% else %}
                                                                             <span
                                                                                 style="color: #000000; background-color: #EEFFEE">
-                                                                                {{'%0.2f'| format(fantasy.pickmul*(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
+                                                                                {{'%0.2f'| format(fantasy.pickmul*(game.kills * fantasy.kill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
                                                                             </span>
                                                                             {% endif %}
                                                                             {% else %}
                                                                             {% if champions[game.champion-1] in matchup['ban2' + role.role] %}
                                                                             <span
                                                                                 style="color: #000000; background-color: #FFEEEE">
-                                                                                {{'%0.2f'| format(fantasy.banmul*(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
+                                                                                {{'%0.2f'| format(fantasy.banmul*(game.kills * fantasy.kill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
                                                                             </span>
                                                                             {% else %}
                                                                             <span style="color: #000000">
-                                                                                {{'%0.2f'| format(1*(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
+                                                                                {{'%0.2f'| format(1*(game.kills * fantasy.kill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15))}}
                                                                             </span>
                                                                             {% endif %}
                                                                             {% endif %}
 
                                                                             <br />
                                                                             <span style="color: #888888">
-                                                                                {{'%0.2f'| format(game.kills * fantasy.kill + game.soloKills * fantasy.soloKill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15)}}
+                                                                                {{'%0.2f'| format(game.kills * fantasy.kill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * fantasy.elder + game.dragons|length * fantasy.dragon + game.cs15 * fantasy.morecs15)}}
                                                                             </span>
                                                                         </div>
                                                                         {% else %}

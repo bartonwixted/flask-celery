@@ -107,6 +107,18 @@ Manual entry for players
 </form>
 <br />
 
+
+<form method="POST">
+    <button type="submit" name="action" value="gameid" class="btn btn-primary">Fix gameID</button>
+    <div class="form-group">
+        <label for="startid">Starting gameID</label>
+        <input type="startid" class="form-control" id="currentID" name="currentID" placeholder="starting ID" />
+    </div>
+    <div class="form-group">
+        <label for="endid">Actual gameID</label>
+        <input type="endid" class="form-control" id="newID" name="newID" placeholder="actual ID" />
+    </div>
+</form>
 <h1 align="center">Existing Tournaments</h1>
 
 {% for tourney in tournaments %}

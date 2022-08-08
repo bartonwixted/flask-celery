@@ -222,11 +222,12 @@ def myleagues():
         teams=allTeams)
 
 
-@main_blueprint.route("/", methods=["GET", 'POST'])
+@main_blueprint.route("/", methods=["GET"])
 def home():
 
-    if(request.method == 'POST'):
-        print(request.form.get())
+    print(request.remote_addr)
+    print(request.headers)
+    print("hi")
     champs = Champion.query.all()
     return render_template("home.html", user=current_user, champs=champs)
 
@@ -234,6 +235,7 @@ def home():
 @main_blueprint.route("/matchup", methods=['GET', 'POST'])
 @login_required
 def matchup():
+    print(current_user.username)
     leagueid = request.args.get('leagueid')
     matchupid = request.args.get('m')
     robot = User.query.filter_by(email="bot@bot").first()
@@ -628,7 +630,6 @@ def matchup():
                             db.session.commit()
                             print(dstats)
                     elif task_progress.status == "FAILURE":
-
                         task = background_scrape.delay(game.gameId)
                         thisGame = Gamestats.query.filter_by(
                             gameId=game.gameId).all()
@@ -1176,6 +1177,7 @@ def matchup():
 @main_blueprint.route("/manage", methods=['GET', 'POST'])
 @login_required
 def manage():
+    print(current_user.username)
     leagueid = request.args.get('leagueid')
     fantasy = Fantasyleague.query.filter_by(id=leagueid).first()
     tournament = Tournament.query.filter_by(id=fantasy.tournament).first()
@@ -1336,9 +1338,9 @@ def manage():
             fantasy.win = request.form.get("win_points")
             db.session.commit()
     champions = Champion.query.all()
-    now = 2
+    now = 7
     if current_user.id == 1:
-        now = 2
+        now = 7
     return render_template(
         "manage.html",
         user=current_user,
@@ -1449,7 +1451,15 @@ def admin():
                         print("added ", player.name,
                               " to ", team.name, role1.role)
                         print(player.role)
+        elif(action == "gameid"):
 
+            stats = Gamestats.query.filter_by(
+                gameId=request.form.get("currentID")).all()
+            for stat in stats:
+                print(stat.champion)
+                stat.gameId = request.form.get("newID")
+                stat.worker = None
+                db.session.commit()
     if (current_user.id == 1):
         allLeagues = League.query.all()
         allTournaments = Tournament.query.all()
