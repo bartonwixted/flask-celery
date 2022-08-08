@@ -1058,7 +1058,7 @@ def matchup():
     # if worker is finished, pull and store all the data.
     # If there is no champ entry and no worker, create a worker.
 
-    if min(times) < now:
+    if min(times) > now:
         picks_locked = True
 
         if (team1.owner == robot.id) and (not matchup.pick1top):
