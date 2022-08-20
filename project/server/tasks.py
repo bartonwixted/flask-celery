@@ -69,8 +69,6 @@ def background_scrape(self, gameID):
                 participants[i]["id"] = gameWindow["gameMetadata"]["blueTeamMetadata"][
                     "participantMetadata"
                 ][i]["esportsPlayerId"]
-            else:
-                participants[i]["id"] = '105504918290295055'
             participants[i]["pick"] = gameWindow["gameMetadata"]["blueTeamMetadata"][
                 "participantMetadata"
             ][i]["championId"]
@@ -118,9 +116,12 @@ def background_scrape(self, gameID):
             participants[i + 5]["name"] = gameWindow["gameMetadata"]["redTeamMetadata"][
                 "participantMetadata"
             ][i]["summonerName"]
-            participants[i + 5]["id"] = gameWindow["gameMetadata"]["redTeamMetadata"][
+            if "esportsPlayerId" in gameWindow["gameMetadata"]["redTeamMetadata"][
                 "participantMetadata"
-            ][i]["esportsPlayerId"]
+            ][i]:
+                participants[i + 5]["id"] = gameWindow["gameMetadata"]["redTeamMetadata"][
+                    "participantMetadata"
+                ][i]["esportsPlayerId"]
             participants[i + 5]["pick"] = gameWindow["gameMetadata"]["redTeamMetadata"][
                 "participantMetadata"
             ][i]["championId"]
@@ -437,6 +438,9 @@ def background_scrape(self, gameID):
 
     # %% CS15
 
+    if len(gameStart) == 20:
+        gameStart = gameStart[0:19:1] + ".000Z"
+
     point = datetime.datetime.strptime(gameStart, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     point = point + datetime.timedelta(minutes=15)
@@ -455,10 +459,17 @@ def background_scrape(self, gameID):
     gameDetails = api.get_details(game_id=gameID, starting_time=stamp)
 
     for i in range(len(gameWindow)):
-        stamp = datetime.datetime.strptime(
-            gameWindow["frames"][-(i + 1)
-                                 ]["rfc460Timestamp"], "%Y-%m-%dT%H:%M:%S.%fZ"
-        )
+        if len(gameWindow["frames"][-(i + 1)
+                                    ]["rfc460Timestamp"]) > 20:
+            stamp = datetime.datetime.strptime(
+                gameWindow["frames"][-(i + 1)
+                                     ]["rfc460Timestamp"], "%Y-%m-%dT%H:%M:%S.%fZ"
+            )
+        else:
+            stamp = datetime.datetime.strptime(
+                gameWindow["frames"][-(i + 1)
+                                     ]["rfc460Timestamp"], "%Y-%m-%dT%H:%M:%SZ"
+            )
 
         if stamp > point2:
             # print(i)

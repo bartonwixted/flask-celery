@@ -110,6 +110,33 @@
 
 <h1 align="center">Test page</h1>
 
+{% if stats  %}
+
+hi
+
+<br />
+{% for stat in stats %}
+{% if loop.index % 4 == 1 %}
+<div class="col d-flex">
+    {% endif %}
+    <ul class="list-group w-25 ">
+        <li class="list-group-item list-group-item-primary">{{stat.name}}</li>
+        {% for key, value in stat.entries.items() %}
+        {% if loop.index < 7 %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">{{key}}
+            <span class="badge bg-primary rounded-pill"> {{'%0.2f'| format(value)}} </span>
+        </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    {% if loop.index % 4 == 0 %}
+</div>
+{% endif %}
+
+{% endfor %}
+
+{% endif %}
+
 <table style="text-align: center;" border="0">
 
     <tbody>
@@ -383,4 +410,13 @@
         config2
     );
 </script>
+
+Todo:
+<br />
+View of all rounds + matchups at once
+<br />
+View my matchups in each round, but better (sidebar?)
+<br />
+main fantasy league page showing useful stats about fantasy teams - points for, against, pick points, ban points denied,
+point diff total, etc.
 {% endblock %}

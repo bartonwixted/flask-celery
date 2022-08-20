@@ -629,7 +629,7 @@ def matchup():
 
                             db.session.commit()
                             print(dstats)
-                    elif task_progress.status == "FAILURE":
+                    elif task_progress.status == "FAILURE" or task_progress.status == "PENDING" or game.worker == "4150a7db-f226-4ab1-aa52-8aff8cc9b567":
                         task = background_scrape.delay(game.gameId)
                         thisGame = Gamestats.query.filter_by(
                             gameId=game.gameId).all()
@@ -840,7 +840,10 @@ def matchup():
                             champion = Champion.query.filter_by(
                                 name=data['pick']).first()
                             dstats.champion = champion.id
-                            dstats.playerId = data['id']
+                            if "id" in data:
+                                dstats.playerId = data['id']
+                            else:
+                                dstats.playerId = "105504918290295055"
                             dstats.teamId = data['teamId']
                             dstats.kills = data['kills']
                             dstats.deaths = data['deaths']
@@ -872,7 +875,7 @@ def matchup():
                             db.session.commit()
                             print(dstats)
 
-                    elif task_progress.status == "FAILURE":
+                    elif task_progress.status == "FAILURE" or task_progress.status == "PENDING" or game.worker == "4150a7db-f226-4ab1-aa52-8aff8cc9b567":
 
                         task = background_scrape.delay(game.gameId)
                         thisGame = Gamestats.query.filter_by(
@@ -1057,8 +1060,10 @@ def matchup():
     # If there is no champion entry, but there is a workerID, check the worker status
     # if worker is finished, pull and store all the data.
     # If there is no champ entry and no worker, create a worker.
-
-    if min(times) > now:
+    print(min(times))
+    print(now)
+    print(min(times) < now)
+    if min(times) < now:
         picks_locked = True
 
         if (team1.owner == robot.id) and (not matchup.pick1top):
@@ -1338,14 +1343,172 @@ def manage():
             fantasy.win = request.form.get("win_points")
             db.session.commit()
     champions = Champion.query.all()
-    now = 7
+    now = 8
     if current_user.id == 1:
-        now = 7
+        now = 8
     return render_template(
         "manage.html",
         user=current_user,
         name=current_user.username, fantasy=fantasy, league=league, tournament=tournament, champions=champions, picks_locked=True, now=now
     )
+
+
+@main_blueprint.route("/stats", methods=['GET'])
+def stats():
+    leagueid = request.args.get('leagueid')
+    fantasy = Fantasyleague.query.filter_by(id=leagueid).first()
+
+    # the variables we pass to build the page:
+    # fantasy team pick ban stats, points gained and lost through pick/ban, champion pick/ban stats, player pick/ban stats, total points over the whole season, point differentials - largest and smallest
+    #structure: {"name:":"Pick/Ban stats", "description":"Your text here", "entries":[{"name":"Jimmy", "number":5, "champ":champid}]}
+
+    fantasystats = [{"name": "Total round wins", "entries": {}},
+                    {"name": "Total points", "entries": {}},
+                    {"name": "Point differentials", "entries": {}},
+                    {"name": "Most bonus points", "entries": {}},
+                    {"name": "Most picks", "entries": {}},
+                    {"name": "Most pick points", "entries": {}},
+                    {"name": "Most bans", "entries": {}},
+                    {"name": "Most banned (lost) points", "entries": {}},
+                    {"name": "Most nullified pick/bans", "entries": {}},
+                    {"name": "Most picks (champions)", "entries": {}},
+                    {"name": "Most pick points (champions)", "entries": {}},
+                    {"name": "Most bans (champions)", "entries": {}},
+                    {"name": "Most ban points (champions)", "entries": {}},
+                    {"name": "Most contentious champions", "entries": {}},
+                    {"name": "Highest scoring champion", "entries": {}},
+                    {"name": "Highest scoring player", "entries": {}}]
+
+    for user in fantasy.users:
+        fantasystats[0]["entries"][user.username] = 0
+        fantasystats[1]["entries"][user.username] = 0
+        fantasystats[2]["entries"][user.username] = 0
+        fantasystats[3]["entries"][user.username] = 0
+        fantasystats[4]["entries"][user.username] = 0
+        fantasystats[5]["entries"][user.username] = 0
+        fantasystats[6]["entries"][user.username] = 0
+        fantasystats[7]["entries"][user.username] = 0
+        fantasystats[8]["entries"][user.username] = 0
+    champs = Champion.query.all()
+    for champ in champs:
+        fantasystats[9]["entries"][champ.name] = 0
+        fantasystats[10]["entries"][champ.name] = 0
+        fantasystats[11]["entries"][champ.name] = 0
+        fantasystats[12]["entries"][champ.name] = 0
+        fantasystats[13]["entries"][champ.name] = 0
+        fantasystats[14]["entries"][champ.name] = 0
+
+    tourney = Tournament.query.filter_by(id=fantasy.tournament).first()
+
+    for team in tourney.teams:
+        for role in team.roles:
+            for player in role.players:
+                fantasystats[15]["entries"][player.name] = 0
+
+    for round in fantasy.rounds:
+        for matchup in round.weekstats:
+            team1 = Fantasyteam.query.filter_by(id=matchup.team1).first()
+            owner1 = User.query.filter_by(id=team1.owner).first()
+
+            team2 = Fantasyteam.query.filter_by(id=matchup.team2).first()
+            owner2 = User.query.filter_by(id=team2.owner).first()
+
+            if matchup.total1 < matchup.total2:
+                fantasystats[0]["entries"][owner2.username] = fantasystats[0]["entries"][owner2.username] + 1
+            elif matchup.total2 < matchup.total1:
+                fantasystats[0]["entries"][owner1.username] = fantasystats[0]["entries"][owner1.username] + 1
+
+            fantasystats[1]["entries"][owner1.username] = fantasystats[1]["entries"][owner1.username] + matchup.total1
+            fantasystats[1]["entries"][owner2.username] = fantasystats[1]["entries"][owner2.username] + matchup.total2
+
+            fantasystats[2]["entries"][owner1.username] = fantasystats[2]["entries"][owner1.username] + \
+                matchup.total1 - matchup.total2
+            fantasystats[2]["entries"][owner2.username] = fantasystats[2]["entries"][owner2.username] + \
+                matchup.total2 - matchup.total1
+
+            fantasystats[3]["entries"][owner1.username] = fantasystats[3]["entries"][owner1.username] + \
+                matchup.total1 - matchup.base1
+            fantasystats[3]["entries"][owner2.username] = fantasystats[3]["entries"][owner2.username] + \
+                matchup.total2 - matchup.base2
+
+            fantasystats[4]["entries"][owner1.username] = fantasystats[4]["entries"][owner1.username] + (matchup.base1top < matchup.total1top) + (matchup.base1mid < matchup.total1mid) + (
+                matchup.base1jungle < matchup.total1jungle) + (matchup.base1bottom < matchup.total1bottom) + (matchup.base1support < matchup.total1support)
+            fantasystats[4]["entries"][owner2.username] = fantasystats[4]["entries"][owner2.username] + (matchup.base2top < matchup.total2top) + (matchup.base2mid < matchup.total2mid) + (
+                matchup.base2jungle < matchup.total2jungle) + (matchup.base2bottom < matchup.total2bottom) + (matchup.base2support < matchup.total2support)
+
+            fantasystats[5]["entries"][owner1.username] = fantasystats[5]["entries"][owner1.username] + (matchup.base1top < matchup.total1top)*(matchup.total1top - matchup.base1top) + (matchup.base1mid < matchup.total1mid)*(matchup.total1mid - matchup.base1mid) + (
+                matchup.base1jungle < matchup.total1jungle)*(matchup.total1jungle - matchup.base1jungle) + (matchup.base1bottom < matchup.total1bottom)*(matchup.total1bottom - matchup.base1bottom) + (matchup.base1support < matchup.total1support)*(matchup.total1support - matchup.base1support)
+            fantasystats[5]["entries"][owner2.username] = fantasystats[5]["entries"][owner2.username] + (matchup.base2top < matchup.total2top)*(matchup.total2top - matchup.base2top) + (matchup.base2mid < matchup.total2mid)*(matchup.total2mid - matchup.base2mid) + (
+                matchup.base2jungle < matchup.total2jungle)*(matchup.total2jungle - matchup.base2jungle) + (matchup.base2bottom < matchup.total2bottom)*(matchup.total2bottom - matchup.base2bottom) + (matchup.base2support < matchup.total2support)*(matchup.total2support - matchup.base2support)
+
+            fantasystats[6]["entries"][owner1.username] = fantasystats[6]["entries"][owner1.username] + (matchup.base1top > matchup.total1top) + (matchup.base1mid > matchup.total1mid) + (
+                matchup.base1jungle > matchup.total1jungle) + (matchup.base1bottom > matchup.total1bottom) + (matchup.base1support > matchup.total1support)
+            fantasystats[6]["entries"][owner2.username] = fantasystats[6]["entries"][owner2.username] + (matchup.base2top > matchup.total2top) + (matchup.base2mid > matchup.total2mid) + (
+                matchup.base2jungle > matchup.total2jungle) + (matchup.base2bottom > matchup.total2bottom) + (matchup.base2support > matchup.total2support)
+
+            fantasystats[7]["entries"][owner1.username] = fantasystats[7]["entries"][owner1.username] - ((matchup.base1top > matchup.total1top)*(matchup.total1top - matchup.base1top) + (matchup.base1mid > matchup.total1mid)*(matchup.total1mid - matchup.base1mid) + (
+                matchup.base1jungle > matchup.total1jungle)*(matchup.total1jungle - matchup.base1jungle) + (matchup.base1bottom > matchup.total1bottom)*(matchup.total1bottom - matchup.base1bottom) + (matchup.base1support > matchup.total1support)*(matchup.total1support - matchup.base1support))
+            fantasystats[7]["entries"][owner2.username] = fantasystats[7]["entries"][owner2.username] - ((matchup.base2top > matchup.total2top)*(matchup.total2top - matchup.base2top) + (matchup.base2mid > matchup.total2mid)*(matchup.total2mid - matchup.base2mid) + (
+                matchup.base2jungle > matchup.total2jungle)*(matchup.total2jungle - matchup.base2jungle) + (matchup.base2bottom > matchup.total2bottom)*(matchup.total2bottom - matchup.base2bottom) + (matchup.base2support > matchup.total2support)*(matchup.total2support - matchup.base2support))
+
+            allpicks = [matchup.pick1top, matchup.pick1mid, matchup.pick1jungle, matchup.pick1bottom, matchup.pick1support,
+                        matchup.pick2top, matchup.pick2mid, matchup.pick2jungle, matchup.pick2bottom, matchup.pick2support]
+            pickscore = [matchup.total1top - matchup.base1top, matchup.total1mid - matchup.base1mid, matchup.total1jungle - matchup.base1jungle, matchup.total1bottom - matchup.base1bottom, matchup.total1support - matchup.base1support,
+                         matchup.total2top - matchup.base2top, matchup.total2mid - matchup.base2mid, matchup.total2jungle - matchup.base2jungle, matchup.total2bottom - matchup.base2bottom, matchup.total2support - matchup.base2support]
+            for i, picks in enumerate(allpicks):
+                for pick in picks:
+                    fantasystats[9]["entries"][pick.name] = fantasystats[9]["entries"][pick.name] + 1
+                    fantasystats[10]["entries"][pick.name] = fantasystats[10]["entries"][pick.name] + pickscore[i]
+                    fantasystats[13]["entries"][pick.name] = fantasystats[13]["entries"][pick.name] + 1
+            allbans = [matchup.ban1top, matchup.ban1mid, matchup.ban1jungle, matchup.ban1bottom, matchup.ban1support,
+                       matchup.ban2top, matchup.ban2mid, matchup.ban2jungle, matchup.ban2bottom, matchup.ban2support]
+            for i, picks in enumerate(allbans):
+                for pick in picks:
+                    fantasystats[11]["entries"][pick.name] = fantasystats[11]["entries"][pick.name] + 1
+                    fantasystats[12]["entries"][pick.name] = fantasystats[12]["entries"][pick.name] + pickscore[i]
+                    fantasystats[13]["entries"][pick.name] = fantasystats[13]["entries"][pick.name] + 1
+                    if allpicks[i] == allbans[i]:
+                        fantasystats[8]["entries"][owner1.username] = fantasystats[8]["entries"][owner1.username] + 1
+                        fantasystats[8]["entries"][owner2.username] = fantasystats[8]["entries"][owner2.username] + 1
+
+            for role in team1.roles:
+                for game in role.games:
+                    if game.round == round.number:
+                        basepoints = game.kills * fantasy.kill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * \
+                            fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + \
+                            game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * \
+                            fantasy.elder + \
+                            len(game.dragons) * fantasy.dragon + \
+                            game.cs15 * fantasy.morecs15
+                        fantasystats[14]["entries"][champs[game.champion -
+                                                           1].name] = fantasystats[14]["entries"][champs[game.champion-1].name] + basepoints
+                        for player in role.players:
+                            if player.default:
+                                fantasystats[15]["entries"][player.name] = fantasystats[15]["entries"][player.name] + basepoints
+
+            for role in team2.roles:
+                for game in role.games:
+                    if game.round == round.number:
+                        basepoints = game.kills * fantasy.kill + game.deaths * fantasy.death + game.assists * fantasy.assist + game.cs * fantasy.cs + game.wardsKilled * fantasy.wardKill + game.wardsPlaced * fantasy.wardPlace + game.firstBlood * \
+                            fantasy.firstBlood + game.firstBaron * fantasy.firstBaron + game.firstDragon * fantasy.firstDragon + game.firstTower * fantasy.firstTower + game.barons * fantasy.baron + \
+                            game.towers * fantasy.tower + game.soloKills + fantasy.soloKill + game.elders * \
+                            fantasy.elder + \
+                            len(game.dragons) * fantasy.dragon + \
+                            game.cs15 * fantasy.morecs15
+                        fantasystats[14]["entries"][champs[game.champion -
+                                                           1].name] = fantasystats[14]["entries"][champs[game.champion-1].name] + basepoints
+                        for player in role.players:
+                            if player.default:
+                                fantasystats[15]["entries"][player.name] = fantasystats[15]["entries"][player.name] + basepoints
+
+            for stat in fantasystats:
+                stat["entries"] = dict(sorted(stat["entries"].items(
+                ), key=lambda item: item[1], reverse=True))
+
+    print(fantasystats)
+    print("hi")
+
+    return render_template("home.html", user=current_user, champs=champs, stats=fantasystats)
 
 
 @main_blueprint.route("/admin", methods=['GET', 'POST'])

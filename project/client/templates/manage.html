@@ -244,14 +244,15 @@ Testing an alternate display option
         {% for i in range(fantasy.rounds|length) %}
 
         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to={{i}}
-            {% if loop.index == now + 1 %} class="active" aria-current="true" {%else%} aria-current="false" {% endif %}
-            aria-label="Slide {{i+1}}"></button>
+            {% if loop.index == now + 1 or (loop.last and loop.index == now) %} class="active" aria-current="true"
+            {%else%} aria-current="false" {% endif %} aria-label="Slide {{i+1}}"></button>
 
         {% endfor %}
     </div>
     <div class="carousel-inner px-5">
         {% for round in fantasy.rounds %}
-        <div class="carousel-item {% if loop.index == now + 1 %} active {% endif %}">
+        <div
+            class="carousel-item {% if loop.index == now + 1 or (loop.last and loop.index == now) %} active {% endif %}">
             <div class="card d-block px-0 px-md-5 pb-5">
                 <div class="container px-0 px-md-5">
                     <div class="row">
